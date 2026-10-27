@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TKM Tech, Salon & Treats - Point of Sale</title>
+  <title>TKM Tech, Salon & Treats - Point of Sale System</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,9 +11,6 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- SheetJS for Excel (.xlsx) Exporting -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
   <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +45,6 @@
   </script>
 
   <style>
-    /* Custom Scrollbar & Circuit Tech Pattern Background */
     body {
       background-color: #0a0812;
       background-image: 
@@ -74,13 +70,6 @@
       background: #9d4edd;
     }
 
-    .neon-glow {
-      box-shadow: 0 0 25px rgba(157, 78, 221, 0.4);
-    }
-    .neon-text {
-      text-shadow: 0 0 12px rgba(199, 125, 255, 0.6);
-    }
-    
     @media print {
       body * {
         visibility: hidden;
@@ -100,88 +89,73 @@
 
 <body class="text-slate-200 font-sans min-h-screen flex flex-col antialiased selection:bg-tkm-purple selection:text-white">
 
-  <!-- ==================== 1. FULLSCREEN LOGIN GATEWAY ==================== -->
-  <div id="login-gateway" class="fixed inset-0 z-50 bg-tkm-black flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-tkm-card border border-tkm-border rounded-3xl p-8 shadow-2xl relative overflow-hidden neon-glow">
-      <!-- Glow Accent Orbs -->
-      <div class="absolute -top-16 -right-16 w-32 h-32 bg-tkm-purple/30 rounded-full blur-2xl"></div>
-      <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-tkm-pink/20 rounded-full blur-2xl"></div>
-
-      <!-- Header & Branding -->
-      <div class="text-center space-y-3 mb-8 relative z-10">
-        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-xl shadow-tkm-purple/40">
-          <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center relative overflow-hidden">
-            <i class="fa-solid fa-lock text-tkm-neon text-xl mb-0.5"></i>
-            <span class="font-display font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-tkm-neon via-white to-tkm-lightpurple tracking-wider leading-none">TKM</span>
+  <!-- ==================== 0. LOGIN GATEWAY OVERLAY ==================== -->
+  <div id="login-screen" class="fixed inset-0 bg-tkm-black/95 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div class="bg-tkm-card border border-tkm-border rounded-3xl p-8 max-w-md w-full shadow-2xl space-y-6 relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-32 h-32 bg-tkm-purple/20 rounded-full blur-2xl"></div>
+      
+      <div class="text-center space-y-3">
+        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-xl shadow-tkm-purple/30">
+          <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center p-2 relative">
+            <span class="font-display font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-tkm-neon via-white to-tkm-lightpurple tracking-wider leading-none">TKM</span>
+            <span class="text-[9px] font-bold text-tkm-pink tracking-tighter uppercase">Tech & Treats</span>
           </div>
         </div>
-
-        <h2 class="text-2xl font-display font-black text-white tracking-wide">
-          TKM <span class="text-tkm-neon font-light">POS Access</span>
-        </h2>
-        <p class="text-xs text-slate-400">Hair Rebond &bull; Phone Repairs &bull; Keychains &bull; Mini Donuts</p>
+        <div>
+          <h2 class="text-2xl font-display font-extrabold text-white">Admin Login Gateway</h2>
+          <p class="text-xs text-slate-400 mt-1">Authorized access for TKM Tech, Salon & Treats POS</p>
+        </div>
       </div>
 
-      <!-- Login Form -->
-      <form onsubmit="handleLogin(event)" class="space-y-4 relative z-10">
-        <!-- Error Alert Container -->
-        <div id="login-error-msg" class="hidden bg-rose-500/10 border border-rose-500/40 text-rose-300 text-xs p-3 rounded-xl flex items-center gap-2">
-          <i class="fa-solid fa-circle-exclamation text-rose-400"></i>
-          <span id="error-text">Invalid username or password!</span>
-        </div>
-
-        <!-- Username Input -->
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Username</label>
+          <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1">Username</label>
           <div class="relative">
-            <i class="fa-solid fa-user-gear absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-            <input type="text" id="login-username" required placeholder="Enter admin username"
-                   class="w-full bg-tkm-black/80 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple transition">
+            <i class="fa-solid fa-user-gear absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="login-user" required placeholder="Enter username" 
+                   class="w-full bg-tkm-black/80 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-tkm-purple">
           </div>
         </div>
 
-        <!-- Password Input -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Password</label>
+          <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1">Password</label>
           <div class="relative">
-            <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-            <input type="password" id="login-password" required placeholder="Enter password"
-                   class="w-full bg-tkm-black/80 border border-tkm-border text-sm rounded-xl pl-10 pr-10 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple transition">
-            
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition">
-              <i id="password-eye-icon" class="fa-solid fa-eye text-xs"></i>
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="password" id="login-pass" required placeholder="Enter password" 
+                   class="w-full bg-tkm-black/80 border border-tkm-border text-sm rounded-xl pl-10 pr-10 py-3 text-white focus:outline-none focus:border-tkm-purple">
+            <button type="button" onclick="togglePassVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+              <i id="pass-toggle-icon" class="fa-solid fa-eye text-xs"></i>
             </button>
           </div>
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" class="w-full py-3.5 mt-2 rounded-xl font-display font-extrabold text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition flex items-center justify-center gap-2">
-          <i class="fa-solid fa-right-to-bracket"></i>
-          <span>ENTER POS TERMINAL</span>
+        <div id="login-error" class="hidden p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs text-center font-medium">
+          <i class="fa-solid fa-triangle-exclamation mr-1"></i> Invalid Username or Password.
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl font-display font-bold text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition">
+          <i class="fa-solid fa-right-to-bracket mr-2"></i> LOGIN TO POS TERMINAL
         </button>
       </form>
 
-      <!-- Footer Info -->
-      <div class="mt-6 text-center text-[11px] text-slate-500 border-t border-tkm-border/60 pt-4">
-        Protected POS Gateway &bull; Authorized Personnel Only
+      <div class="text-center pt-2 border-t border-tkm-border/50">
+        <p class="text-[11px] text-slate-500">TKM Tech, Salon & Treats &bull; Secure Authentication</p>
       </div>
     </div>
   </div>
 
 
-  <!-- ==================== 2. MAIN POS APP (HIDDEN BEFORE LOGIN) ==================== -->
-  <div id="main-app" class="hidden flex-col min-h-screen">
-
+  <!-- ==================== MAIN POS INTERFACE ==================== -->
+  <div id="app-content" class="hidden min-h-screen flex flex-col">
+    
     <!-- TOP HEADER / BRANDING BAR -->
     <header class="bg-tkm-card/90 backdrop-blur-md border-b border-tkm-border/80 sticky top-0 z-30">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
         <!-- Logo + Brand Name -->
         <div class="flex items-center space-x-4">
-          <div class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-lg shadow-tkm-purple/30 group cursor-pointer" onclick="switchTab('pos')">
+          <div class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-lg shadow-tkm-purple/30 cursor-pointer" onclick="switchTab('pos')">
             <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center p-1 relative overflow-hidden">
-              <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#c77dff_1px,transparent_1px)] [background-size:8px_8px]"></div>
-              <i class="fa-solid fa-wrench text-tkm-neon text-xs absolute top-1.5 right-2"></i>
               <span class="font-display font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-tkm-neon via-white to-tkm-lightpurple tracking-wider leading-none">TKM</span>
               <span class="text-[8px] font-bold text-tkm-pink tracking-tighter uppercase -mt-0.5">Tech & Treats</span>
             </div>
@@ -194,7 +168,7 @@
             </h1>
             <p class="text-xs text-slate-400 font-medium hidden sm:block">
               <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond &bull;
-              <i class="fa-solid fa-mobile-screen-button text-tkm-purple mx-1"></i> Phone Repairs &bull;
+              <i class="fa-solid fa-mobile-screen-button text-tkm-purple mx-1"></i> Tech Repairs &bull;
               <i class="fa-solid fa-keychain text-tkm-neon mx-1"></i> Keychains &bull;
               <i class="fa-solid fa-cookie text-amber-400 ml-1"></i> Mini Donuts
             </p>
@@ -203,27 +177,23 @@
 
         <!-- Navigation & Action Buttons -->
         <div class="flex items-center space-x-2 sm:space-x-3">
-          <!-- POS Switcher Button -->
           <button id="nav-pos-btn" onclick="switchTab('pos')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple">
             <i class="fa-solid fa-cash-register"></i>
             <span class="hidden md:inline">POS Terminal</span>
           </button>
 
-          <!-- Orders & Excel Hub Button -->
           <button id="nav-orders-btn" onclick="switchTab('orders')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition">
             <i class="fa-solid fa-file-excel text-emerald-400"></i>
             <span class="hidden md:inline">Orders & Sync Hub</span>
             <span id="order-count-badge" class="ml-1 text-xs px-2 py-0.5 bg-tkm-purple/40 text-tkm-neon rounded-full">0</span>
           </button>
 
-          <!-- Google Sheets Sync Configuration -->
-          <button onclick="openConfigModal()" title="Google Sheets / Excel Cloud Webhook Config" class="p-2.5 rounded-xl bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple hover:text-white transition relative">
+          <button onclick="openConfigModal()" title="Excel / Google Sheets Webhook Settings" class="p-2.5 rounded-xl bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple hover:text-white transition relative">
             <i class="fa-solid fa-cloud-arrow-up text-tkm-neon"></i>
             <span id="webhook-status-dot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500"></span>
           </button>
 
-          <!-- Logout Button -->
-          <button onclick="handleLogout()" title="Log out" class="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500 hover:text-white transition">
+          <button onclick="logout()" title="Logout Admin Session" class="p-2.5 rounded-xl bg-tkm-card text-rose-400 border border-tkm-border hover:bg-rose-500/10 transition">
             <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
@@ -242,11 +212,10 @@
           
           <!-- Search & Category Filters -->
           <div class="bg-tkm-card border border-tkm-border rounded-2xl p-3.5 shadow-xl flex flex-col md:flex-row gap-3 items-center justify-between">
-            <!-- Search input -->
             <div class="relative w-full md:w-64">
               <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
               <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Search rebond, tech, keychains, donuts..." 
-                     class="w-full bg-tkm-black/60 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple">
+                     class="w-full bg-tkm-black/60 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-tkm-purple">
             </div>
 
             <!-- Category Buttons -->
@@ -271,7 +240,7 @@
 
           <!-- Product Cards Grid -->
           <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            <!-- Dynamic JS Products Injected Here -->
+            <!-- Injected via JS -->
           </div>
 
         </div>
@@ -280,7 +249,6 @@
         <div class="lg:col-span-5 xl:col-span-4">
           <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-2xl flex flex-col h-[calc(100vh-140px)] sticky top-24">
             
-            <!-- Cart Header -->
             <div class="flex items-center justify-between pb-4 border-b border-tkm-border">
               <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg bg-tkm-purple/20 flex items-center justify-center text-tkm-neon">
@@ -307,7 +275,6 @@
 
             <!-- Cart Items Scroll Area -->
             <div id="cart-items" class="flex-1 overflow-y-auto py-3 space-y-3 pr-1">
-              <!-- Empty Cart State -->
               <div id="empty-cart-msg" class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
                 <i class="fa-solid fa-cart-flatbed text-4xl mb-3 text-tkm-border"></i>
                 <p class="text-sm font-medium">Cart is empty</p>
@@ -315,9 +282,8 @@
               </div>
             </div>
 
-            <!-- Order Summary & Checkout Area -->
+            <!-- Order Summary & Checkout -->
             <div class="pt-4 border-t border-tkm-border space-y-3 bg-tkm-card/50">
-              <!-- Calculations -->
               <div class="space-y-1.5 text-xs text-slate-300">
                 <div class="flex justify-between">
                   <span>Subtotal</span>
@@ -332,7 +298,7 @@
                 </div>
                 <div class="flex justify-between items-center text-sm font-bold text-white pt-2 border-t border-tkm-border/60">
                   <span class="text-tkm-neon font-display">TOTAL AMOUNT</span>
-                  <span id="cart-total" class="text-xl font-mono text-tkm-neon">₱0.00</span>
+                  <span id="cart-total" class="text-2xl font-mono text-tkm-neon">₱0.00</span>
                 </div>
               </div>
 
@@ -343,7 +309,7 @@
                   <button type="button" onclick="setPaymentMethod('Cash')" id="pay-cash" class="pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition">
                     <i class="fa-solid fa-money-bill-wave mr-1 text-emerald-400"></i> Cash
                   </button>
-                  <button type="button" onclick="setPaymentMethod('GCash / E-Wallet')" id="pay-ewallet" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
+                  <button type="button" onclick="setPaymentMethod('GCash')" id="pay-ewallet" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
                     <i class="fa-solid fa-mobile-retro mr-1 text-sky-400"></i> GCash
                   </button>
                   <button type="button" onclick="setPaymentMethod('Card')" id="pay-card" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
@@ -352,28 +318,11 @@
                 </div>
               </div>
 
-              <!-- SEPARATED ACTIONS: Save Order (Auto-Excel Sync) vs Print Receipt -->
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <!-- Save Order Button -->
-                <button id="save-order-btn" onclick="saveOrder()" disabled 
-                        class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-emerald-600 to-teal-500 shadow-lg shadow-emerald-600/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-floppy-disk text-sm"></i>
-                  <span>SAVE ORDER</span>
-                </button>
-
-                <!-- Print Receipt Button -->
-                <button id="print-receipt-btn" onclick="printReceiptForCurrentOrder()" disabled 
-                        class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-print text-sm"></i>
-                  <span>PRINT RECEIPT</span>
-                </button>
-              </div>
-
-              <!-- Inline Success / Notification Toast -->
-              <div id="pos-toast" class="hidden text-center p-2 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition">
-                <i class="fa-solid fa-circle-check mr-1"></i> Order saved & auto-synced to Excel!
-              </div>
-
+              <!-- Single Checkout Button -->
+              <button id="checkout-btn" onclick="completeAndSaveOrder()" disabled class="w-full py-3.5 rounded-xl font-display font-bold text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>COMPLETE & SAVE ORDER</span>
+              </button>
             </div>
 
           </div>
@@ -388,7 +337,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
             <div class="p-3 bg-tkm-purple/20 rounded-xl text-tkm-neon text-xl">
-              <i class="fa-solid fa-peso-sign"></i>
+              <i class="fa-solid fa-sack-dollar"></i>
             </div>
             <div>
               <p class="text-xs text-slate-400 font-medium">Total Sales Revenue</p>
@@ -412,7 +361,7 @@
             </div>
             <div>
               <p class="text-xs text-slate-400 font-medium">Hair Services / Repairs</p>
-              <h3 id="stat-salon-count" class="text-2xl font-bold text-white">0</h3>
+              <h3 id="stat-repairs-count" class="text-2xl font-bold text-white">0</h3>
             </div>
           </div>
 
@@ -427,7 +376,7 @@
           </div>
         </div>
 
-        <!-- Excel Hub Header & Export Controls -->
+        <!-- Excel Hub Header & Open Excel Button -->
         <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <h2 class="text-xl font-display font-bold text-white flex items-center gap-2">
@@ -440,10 +389,10 @@
           </div>
 
           <div class="flex items-center space-x-3 w-full md:w-auto">
-            <!-- Direct Download Formatted Excel File Button -->
-            <button onclick="exportToExcelFile()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
-              <i class="fa-solid fa-download"></i>
-              Export Styled .XLSX Spreadsheet
+            <!-- Open Connected Excel Spreadsheet Button -->
+            <button onclick="openExcelSpreadsheet()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              Open Connected Excel Spreadsheet
             </button>
 
             <!-- Clear All Logs Button -->
@@ -484,22 +433,32 @@
       </div>
 
     </main>
-
   </div>
 
-  <!-- ==================== MODALS ==================== -->
+  <!-- ==================== MODALS & TOASTS ==================== -->
 
-  <!-- 1. CUSTOMIZATION MODAL -->
+  <!-- Toast Notification -->
+  <div id="toast-notification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-tkm-card border border-tkm-purple text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+      <div id="toast-icon" class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <h4 id="toast-title" class="text-xs font-bold text-white">Order Completed</h4>
+        <p id="toast-message" class="text-[11px] text-slate-300">Saved locally and synced to Excel.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customization Modal -->
   <div id="modal-custom" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-tkm-card border border-tkm-purple rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-tkm-border pb-3">
-        <h3 id="custom-modal-title" class="font-display font-bold text-white text-base">Customize Item</h3>
+        <h3 id="custom-modal-title" class="font-display font-bold text-white text-base">Customize Service / Product</h3>
         <button onclick="closeModal('modal-custom')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <div id="custom-modal-body" class="space-y-3">
-        <!-- Dynamic fields injected via JS -->
-      </div>
+      <div id="custom-modal-body" class="space-y-3"></div>
 
       <div class="pt-3 flex justify-end space-x-2">
         <button onclick="closeModal('modal-custom')" class="px-4 py-2 rounded-xl text-xs bg-tkm-hover text-slate-300">Cancel</button>
@@ -508,41 +467,38 @@
     </div>
   </div>
 
-  <!-- 2. GOOGLE SHEETS / EXCEL WEBHOOK CONFIG MODAL -->
+  <!-- Google Sheets Webhook Modal -->
   <div id="modal-config" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-tkm-card border border-tkm-border rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-tkm-border pb-3">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-file-excel text-emerald-400 text-lg"></i>
-          <h3 class="font-display font-bold text-white text-base">Google Sheets / Excel Cloud Link</h3>
+          <h3 class="font-display font-bold text-white text-base">Google Sheets / Excel Cloud Sync Link</h3>
         </div>
         <button onclick="closeModal('modal-config')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
       <p class="text-xs text-slate-300 leading-relaxed">
-        Connect your online Excel or Google Sheets spreadsheet to automatically save POS orders live when checked out.
+        Paste your Google Apps Script Web App URL below so every completed order automatically saves to your live Excel/Google Sheet.
       </p>
 
       <div class="space-y-3 bg-tkm-black/50 p-4 rounded-xl border border-tkm-border">
         <div>
-          <label class="text-xs font-bold text-tkm-neon block mb-1">Webhook / Google Apps Script URL:</label>
+          <label class="text-xs font-bold text-tkm-neon block mb-1">Webhook / Google Apps Script Exec URL:</label>
           <input type="text" id="webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec" 
                  class="w-full bg-tkm-black border border-tkm-border text-xs rounded-lg px-3 py-2 text-white font-mono focus:border-tkm-purple focus:outline-none">
         </div>
 
-        <div class="text-[11px] text-slate-400 space-y-1">
-          <p class="font-bold text-slate-300">Quick Setup Instructions:</p>
-          <ol class="list-decimal pl-4 space-y-1">
-            <li>Create a Google Sheet with columns: <span class="text-tkm-lightpurple font-mono">OrderID, Date, Customer, Items, Payment, Total, Status</span></li>
-            <li>In Google Sheets, click <b>Extensions &gt; Apps Script</b> and paste the script.</li>
-            <li>Deploy as Web App (Set access to: <b>Anyone</b>) and paste the web app link above!</li>
-          </ol>
+        <div>
+          <label class="text-xs font-bold text-emerald-400 block mb-1">Direct Google Sheet Viewer URL (Optional):</label>
+          <input type="text" id="sheet-url-input" placeholder="https://docs.google.com/spreadsheets/d/..." 
+                 class="w-full bg-tkm-black border border-tkm-border text-xs rounded-lg px-3 py-2 text-white font-mono focus:border-tkm-purple focus:outline-none">
         </div>
       </div>
 
       <div class="pt-2 flex justify-between items-center">
         <button onclick="testWebhookConnection()" class="px-3 py-2 rounded-xl text-xs bg-tkm-hover border border-tkm-border text-slate-300 hover:text-white">
-          <i class="fa-solid fa-vial mr-1"></i> Test Connection
+          <i class="fa-solid fa-vial mr-1"></i> Test Link
         </button>
         <button onclick="saveWebhookConfig()" class="px-4 py-2 rounded-xl text-xs font-bold bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30">
           Save Settings
@@ -551,36 +507,30 @@
     </div>
   </div>
 
-  <!-- 3. THERMAL RECEIPT PREVIEW MODAL -->
+  <!-- Thermal Receipt Modal -->
   <div id="modal-receipt" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-tkm-card border border-tkm-border rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-tkm-border pb-3">
-        <h3 class="font-display font-bold text-white text-base">Customer Order Receipt</h3>
+        <h3 class="font-display font-bold text-white text-base">Customer Receipt</h3>
         <button onclick="closeModal('modal-receipt')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <!-- Printable Thermal Receipt Container -->
+      <!-- Printable Receipt -->
       <div id="printableReceipt" class="bg-white text-black p-5 rounded-lg shadow font-mono text-xs space-y-3">
-        <!-- Receipt Header -->
         <div class="text-center border-b border-dashed border-slate-400 pb-3">
           <h2 class="font-bold text-base tracking-wider">TKM TECH, SALON & TREATS</h2>
-          <p class="text-[10px] text-slate-600">Hair Rebond &bull; Phone Repairs &bull; Keychains &bull; Donuts</p>
+          <p class="text-[10px] text-slate-600">Hair Rebond &bull; Repairs &bull; Keychains &bull; Donuts</p>
           <p class="text-[10px] text-slate-500 mt-1" id="receipt-date">2026-10-27 10:00 AM</p>
           <p class="text-[10px] text-slate-700 font-bold mt-1" id="receipt-id">ORDER #TKM-8891</p>
         </div>
 
-        <!-- Customer Line -->
         <div class="border-b border-dashed border-slate-300 pb-2 text-[11px]">
           <p>Customer: <span id="receipt-cust" class="font-bold">Walk-in</span></p>
           <p>Payment: <span id="receipt-pay">Cash</span></p>
         </div>
 
-        <!-- Receipt Items list -->
-        <div id="receipt-items-list" class="space-y-1.5 py-1">
-          <!-- Dynamic Items -->
-        </div>
+        <div id="receipt-items-list" class="space-y-1.5 py-1"></div>
 
-        <!-- Totals -->
         <div class="border-t border-dashed border-slate-400 pt-2 space-y-1 text-right">
           <div class="flex justify-between">
             <span>Subtotal:</span>
@@ -592,17 +542,15 @@
           </div>
         </div>
 
-        <!-- Footer -->
         <div class="text-center pt-3 border-t border-dashed border-slate-400 text-[10px] text-slate-600">
           <p>Thank you for choosing TKM!</p>
-          <p class="mt-0.5">Beauty, Tech & Sweet Treats in One Spot.</p>
+          <p class="mt-0.5">Salon services, tech repairs & treats!</p>
         </div>
       </div>
 
-      <!-- Modal Action Buttons -->
       <div class="flex space-x-2 pt-2">
         <button onclick="window.print()" class="flex-1 py-2.5 rounded-xl bg-tkm-purple hover:bg-tkm-lightpurple text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg">
-          <i class="fa-solid fa-print"></i> Print Receipt
+          <i class="fa-solid fa-print"></i> Print Thermal Receipt
         </button>
         <button onclick="closeModal('modal-receipt')" class="px-4 py-2.5 rounded-xl bg-tkm-hover text-slate-300 text-xs font-semibold border border-tkm-border">
           Close
@@ -614,15 +562,11 @@
 
   <!-- ==================== POS LOGIC & APPLICATION JAVASCRIPT ==================== -->
   <script>
-    // --- CREDENTIALS CONFIGURATION ---
-    const ADMIN_USER = "tkm_admin";
-    const ADMIN_PASS = "tkm@2026";
-
-    // --- PRODUCT CATALOG DATA (TKM Tech, Salon & Treats - ALL PRICES IN PESOS ₱) ---
+    // --- PRODUCT CATALOG DATA WITH EXACT PRICING IN PESOS (₱) ---
     const PRODUCTS = [
       // 1. HAIR REBOND & SALON SERVICES
       {
-        id: 'sal-1',
+        id: 'reb-1',
         name: 'Long Hair Rebond',
         category: 'salon',
         price: 800.00,
@@ -630,10 +574,10 @@
         iconColor: 'text-tkm-pink',
         badge: 'Salon Service',
         customizable: true,
-        customPrompt: 'Stylist / Hair Notes (e.g. Thick hair, treated hair):'
+        customPrompt: 'Stylist Notes / Hair Type Details:'
       },
       {
-        id: 'sal-2',
+        id: 'reb-2',
         name: 'Short Hair Rebond',
         category: 'salon',
         price: 500.00,
@@ -641,98 +585,98 @@
         iconColor: 'text-tkm-pink',
         badge: 'Salon Service',
         customizable: true,
-        customPrompt: 'Stylist / Hair Notes:'
+        customPrompt: 'Stylist Notes / Hair Length Details:'
       },
       {
-        id: 'sal-3',
-        name: 'Rebond with Color Short Hair',
+        id: 'reb-3',
+        name: 'Rebond with Color (Short Hair)',
         category: 'salon',
         price: 800.00,
         icon: 'fa-wand-magic-sparkles',
-        iconColor: 'text-tkm-lightpurple',
-        badge: 'Combo Service',
+        iconColor: 'text-tkm-neon',
+        badge: 'Rebond + Color',
         customizable: true,
-        customPrompt: 'Color Shade / Special Request:'
+        customPrompt: 'Specify Short Hair Color Shade:'
       },
       {
-        id: 'sal-4',
-        name: 'Rebond with Color Long Hair',
+        id: 'reb-4',
+        name: 'Rebond with Color (Long Hair)',
         category: 'salon',
         price: 1000.00,
-        icon: 'fa-wand-magic-sparkles',
-        iconColor: 'text-tkm-lightpurple',
-        badge: 'Combo Service',
+        icon: 'fa-crown',
+        iconColor: 'text-tkm-neon',
+        badge: 'Premium Package',
         customizable: true,
-        customPrompt: 'Color Shade / Special Request:'
+        customPrompt: 'Specify Long Hair Color Shade:'
       },
       {
-        id: 'sal-5',
-        name: 'Normal colors (No Bleach)',
+        id: 'reb-5',
+        name: 'Normal Colors (No Bleach)',
         category: 'salon',
         price: 300.00,
-        icon: 'fa-paint-roller',
+        icon: 'fa-palette',
         iconColor: 'text-sky-400',
         badge: 'Hair Color',
         customizable: true,
-        customPrompt: 'Color shade requested:'
+        customPrompt: 'Specify Desired Color Code/Shade:'
       },
       {
-        id: 'sal-6',
-        name: 'Fashion colors (With Bleach)',
+        id: 'reb-6',
+        name: 'Fashion Colors (With Bleach)',
         category: 'salon',
         price: 500.00,
-        icon: 'fa-palette',
-        iconColor: 'text-tkm-neon',
-        badge: 'Fashion Color',
+        icon: 'fa-fire-flame-curved',
+        iconColor: 'text-tkm-pink',
+        badge: 'Bleach & Color',
         customizable: true,
-        customPrompt: 'Bleach level / Fashion tone desired:'
+        customPrompt: 'Specify Fashion Color & Bleach Level:'
       },
 
-      // 2. PHONE REPAIRS & TECH SERVICES
+      // 2. PHONE REPAIRS
       {
         id: 'rep-1',
-        name: 'LCD Screen Replacement',
+        name: 'Phone LCD / Screen Replacement',
         category: 'repairs',
         price: 200.00,
         icon: 'fa-mobile-screen-button',
         iconColor: 'text-tkm-neon',
-        badge: 'Tech Repair',
+        badge: 'LCD Replacement',
         customizable: true,
-        customPrompt: 'Enter Phone Brand & Model (e.g. Samsung A12 / iPhone 11):'
+        customPrompt: 'Enter Phone Model & Color (e.g. iPhone / Samsung):'
       },
       {
         id: 'rep-2',
-        name: 'Battery Replacement',
+        name: 'Phone Battery Replacement',
         category: 'repairs',
         price: 200.00,
-        icon: 'fa-battery-full',
+        icon: 'fa-battery-three-quarters',
         iconColor: 'text-emerald-400',
         badge: 'Battery Swap',
         customizable: true,
-        customPrompt: 'Enter Device Model:'
+        customPrompt: 'Enter Phone Brand / Battery Model:'
       },
       {
         id: 'rep-3',
         name: 'Full Phone Cleaning & Maintenance',
         category: 'repairs',
         price: 50.00,
-        icon: 'fa-shield-halved',
+        icon: 'fa-screwdriver-wrench',
         iconColor: 'text-sky-400',
-        badge: 'Maintenance',
+        badge: 'Tech Care',
         customizable: false
       },
 
       // 3. CUSTOM PICTURE KEYCHAINS
       {
         id: 'key-1',
-        name: 'Custom Photo Acrylic Keychain',
+        name: 'Custom Photo Keychain',
         category: 'keychains',
         price: 50.00,
         icon: 'fa-keychain',
-        iconColor: 'text-tkm-pink',
+        iconColor: 'text-tkm-lightpurple',
         badge: 'Custom Picture',
         customizable: true,
-        customPrompt: 'Photo Reference Code / Customer Name:'
+        customPrompt: 'Photo Reference Code / Couple Name:'
       },
       {
         id: 'key-2',
@@ -743,7 +687,7 @@
         iconColor: 'text-tkm-lightpurple',
         badge: '2-Sided Photo',
         customizable: true,
-        customPrompt: 'Side A & Side B Details:'
+        customPrompt: 'Side A & Side B Photo Details:'
       },
 
       // 4. MINI DONUTS
@@ -786,7 +730,7 @@
         iconColor: 'text-amber-400',
         badge: 'Box of 6',
         customizable: true,
-        customPrompt: 'Specify Flavor Mix (e.g. 2 Glazed, 2 Pink, 2 Choco):'
+        customPrompt: 'Specify Flavors (e.g., 2 Glazed, 2 Pink, 2 Choco):'
       },
       {
         id: 'don-5',
@@ -797,7 +741,7 @@
         iconColor: 'text-tkm-lightpurple',
         badge: 'Box of 12',
         customizable: true,
-        customPrompt: 'Flavor Request / Box Message:'
+        customPrompt: 'Flavor Mix / Special Note on Box:'
       }
     ];
 
@@ -809,72 +753,63 @@
     let ordersHistory = [];
     let pendingCustomItem = null;
     let webhookUrl = localStorage.getItem('tkm_webhook_url') || '';
+    let sheetViewerUrl = localStorage.getItem('tkm_sheet_url') || '';
 
-    // --- INITIALIZATION & AUTH CHECK ---
+    // --- INITIALIZATION & AUTH ---
     window.onload = function() {
       checkAuthSession();
+      loadSavedOrders();
+      renderProducts();
+      updateCartUI();
+      updateWebhookStatusDot();
     };
 
     function checkAuthSession() {
-      const isAuthenticated = sessionStorage.getItem('tkm_authenticated');
-      const gateway = document.getElementById('login-gateway');
-      const mainApp = document.getElementById('main-app');
-
-      if (isAuthenticated === 'true') {
-        gateway.classList.add('hidden');
-        mainApp.classList.remove('hidden');
-        mainApp.classList.add('flex');
-        
-        loadSavedOrders();
-        renderProducts();
-        updateCartUI();
-        updateWebhookStatusDot();
+      const auth = sessionStorage.getItem('tkm_admin_logged');
+      if (auth === 'true') {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-content').classList.remove('hidden');
       } else {
-        gateway.classList.remove('hidden');
-        mainApp.classList.add('hidden');
-        mainApp.classList.remove('flex');
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('app-content').classList.add('hidden');
       }
     }
 
-    // --- LOGIN & LOGOUT HANDLERS ---
-    function handleLogin(event) {
-      event.preventDefault();
-      const user = document.getElementById('login-username').value.trim();
-      const pass = document.getElementById('login-password').value.trim();
-      const errorMsg = document.getElementById('login-error-msg');
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value.trim();
 
-      if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        sessionStorage.setItem('tkm_authenticated', 'true');
-        errorMsg.classList.add('hidden');
-        checkAuthSession();
+      if (user === 'tkm_admin' && pass === 'tkm@2026') {
+        sessionStorage.setItem('tkm_admin_logged', 'true');
+        document.getElementById('login-error').classList.add('hidden');
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-content').classList.remove('hidden');
       } else {
-        document.getElementById('error-text').innerText = "Incorrect username or password.";
-        errorMsg.classList.remove('hidden');
+        document.getElementById('login-error').classList.remove('hidden');
       }
     }
 
-    function handleLogout() {
-      sessionStorage.removeItem('tkm_authenticated');
-      document.getElementById('login-username').value = '';
-      document.getElementById('login-password').value = '';
-      document.getElementById('login-error-msg').classList.add('hidden');
-      checkAuthSession();
-    }
-
-    function togglePasswordVisibility() {
-      const passInput = document.getElementById('login-password');
-      const eyeIcon = document.getElementById('password-eye-icon');
-
-      if (passInput.type === 'password') {
-        passInput.type = 'text';
-        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    function togglePassVisibility() {
+      const input = document.getElementById('login-pass');
+      const icon = document.getElementById('pass-toggle-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash text-xs';
       } else {
-        passInput.type = 'password';
-        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye text-xs';
       }
     }
 
-    // --- TAB SWITCHING ---
+    function logout() {
+      if (confirm('Are you sure you want to log out?')) {
+        sessionStorage.removeItem('tkm_admin_logged');
+        location.reload();
+      }
+    }
+
+    // --- NAVIGATION TAB SWITCHING ---
     function switchTab(tab) {
       const posView = document.getElementById('view-pos');
       const ordersView = document.getElementById('view-orders');
@@ -884,21 +819,18 @@
       if (tab === 'pos') {
         posView.classList.remove('hidden');
         ordersView.classList.add('hidden');
-        
         posBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple";
         ordersBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition";
       } else {
         posView.classList.add('hidden');
         ordersView.classList.remove('hidden');
-
         ordersBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple";
         posBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition";
-        
         renderOrdersTable();
       }
     }
 
-    // --- PRODUCT RENDERING & FILTERS ---
+    // --- PRODUCT CATALOG RENDERING ---
     function renderProducts() {
       const grid = document.getElementById('product-grid');
       const searchTerm = document.getElementById('search-input').value.toLowerCase();
@@ -913,7 +845,7 @@
         grid.innerHTML = `
           <div class="col-span-full py-12 text-center text-slate-500">
             <i class="fa-solid fa-magnifying-glass text-3xl mb-2"></i>
-            <p class="text-sm">No items found matching your filter.</p>
+            <p class="text-sm">No services or products found matching search.</p>
           </div>
         `;
         return;
@@ -923,7 +855,6 @@
         <div onclick="handleProductClick('${p.id}')" 
              class="bg-tkm-card border border-tkm-border hover:border-tkm-purple/80 hover:bg-tkm-hover rounded-2xl p-4 transition duration-200 cursor-pointer shadow-lg flex flex-col justify-between group relative overflow-hidden">
           
-          <!-- Top Row Badge & Icon -->
           <div>
             <div class="flex items-center justify-between mb-3">
               <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-tkm-black/60 border border-tkm-border text-tkm-neon">
@@ -939,9 +870,8 @@
             </h3>
           </div>
 
-          <!-- Price & Add Button -->
           <div class="mt-4 pt-3 border-t border-tkm-border/40 flex items-center justify-between">
-            <span class="text-lg font-mono font-bold text-white">₱${p.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+            <span class="text-lg font-mono font-bold text-white">₱${p.price.toFixed(2)}</span>
             <span class="w-8 h-8 rounded-xl bg-tkm-purple/20 text-tkm-neon group-hover:bg-tkm-purple group-hover:text-white flex items-center justify-center text-xs transition">
               <i class="fa-solid fa-plus"></i>
             </span>
@@ -966,7 +896,7 @@
       renderProducts();
     }
 
-    // --- CART MANAGEMENT & CUSTOMIZATION ---
+    // --- CART MANAGEMENT ---
     function handleProductClick(productId) {
       const product = PRODUCTS.find(p => p.id === productId);
       if (!product) return;
@@ -983,7 +913,7 @@
       document.getElementById('custom-modal-title').innerText = `Customize: ${product.name}`;
       document.getElementById('custom-modal-body').innerHTML = `
         <label class="text-xs font-bold text-slate-300 block">${product.customPrompt}</label>
-        <textarea id="custom-note-input" rows="3" placeholder="Type instructions, hair condition, or model details..." 
+        <textarea id="custom-note-input" rows="3" placeholder="Type instructions or details here..." 
                   class="w-full mt-1.5 bg-tkm-black border border-tkm-border text-xs rounded-xl p-3 text-white focus:border-tkm-purple focus:outline-none"></textarea>
       `;
       
@@ -998,7 +928,6 @@
 
     function addToCart(product, customNote) {
       const existing = cart.find(item => item.id === product.id && item.note === customNote);
-
       if (existing) {
         existing.qty += 1;
       } else {
@@ -1012,7 +941,6 @@
           note: customNote
         });
       }
-
       updateCartUI();
     }
 
@@ -1051,7 +979,7 @@
 
       if (method === 'Cash') {
         document.getElementById('pay-cash').className = "pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition";
-      } else if (method === 'GCash / E-Wallet') {
+      } else if (method === 'GCash') {
         document.getElementById('pay-ewallet').className = "pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition";
       } else {
         document.getElementById('pay-card').className = "pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition";
@@ -1060,8 +988,7 @@
 
     function updateCartUI() {
       const cartContainer = document.getElementById('cart-items');
-      const saveOrderBtn = document.getElementById('save-order-btn');
-      const printReceiptBtn = document.getElementById('print-receipt-btn');
+      const checkoutBtn = document.getElementById('checkout-btn');
 
       if (cart.length === 0) {
         cartContainer.innerHTML = `
@@ -1071,16 +998,14 @@
             <p class="text-xs text-slate-600 mt-1">Select items from catalog to start order</p>
           </div>
         `;
-        if (saveOrderBtn) saveOrderBtn.disabled = true;
-        if (printReceiptBtn) printReceiptBtn.disabled = true;
+        checkoutBtn.disabled = true;
         document.getElementById('cart-subtotal').innerText = '₱0.00';
         document.getElementById('cart-discount').innerText = '-₱0.00';
         document.getElementById('cart-total').innerText = '₱0.00';
         return;
       }
 
-      if (saveOrderBtn) saveOrderBtn.disabled = false;
-      if (printReceiptBtn) printReceiptBtn.disabled = false;
+      checkoutBtn.disabled = false;
 
       let subtotal = 0;
       cartContainer.innerHTML = cart.map((item, idx) => {
@@ -1104,7 +1029,6 @@
                 <span class="px-2 font-mono font-bold text-white">${item.qty}</span>
                 <button onclick="updateCartQty(${idx}, 1)" class="px-2 py-1 hover:bg-tkm-hover text-slate-300">+</button>
               </div>
-
               <span class="font-mono font-bold text-white w-16 text-right">₱${itemTotal.toFixed(2)}</span>
             </div>
           </div>
@@ -1118,8 +1042,8 @@
       document.getElementById('cart-total').innerText = `₱${total.toFixed(2)}`;
     }
 
-    // --- SEPARATED SAVING ORDER & AUTO EXCEL WEBHOOK SYNC ---
-    async function saveOrder() {
+    // --- AUTOMATIC EXCEL SYNC & ORDER COMPLETION ---
+    async function completeAndSaveOrder() {
       if (cart.length === 0) return;
 
       const custName = document.getElementById('cust-name').value.trim() || 'Walk-in Customer';
@@ -1127,7 +1051,6 @@
       
       const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
       const total = Math.max(0, subtotal - discountAmount);
-
       const itemsSummary = cart.map(i => `${i.qty}x ${i.name} ${i.note ? `(${i.note})` : ''}`).join(', ');
 
       const newOrder = {
@@ -1144,16 +1067,16 @@
         webhookStatus: 'Pending'
       };
 
-      // 1. Save locally to DB array & localStorage
+      // 1. Add locally
       ordersHistory.unshift(newOrder);
       saveOrdersToLocalStorage();
 
-      // 2. Automatically sync to Excel / Google Sheets Webhook API if configured
+      // 2. Automatic Live Excel Webhook Sync
       if (webhookUrl) {
         try {
           newOrder.webhookStatus = 'Syncing...';
           renderOrdersTable();
-          
+
           await fetch(webhookUrl, {
             method: 'POST',
             mode: 'no-cors',
@@ -1162,61 +1085,28 @@
           });
 
           newOrder.webhookStatus = 'Saved to Cloud Excel';
+          showToast('Order Auto-Saved', 'Transaction logged & pushed to connected Excel spreadsheet.');
         } catch (err) {
-          console.error('Webhook sync error:', err);
-          newOrder.webhookStatus = 'Local Only (Error)';
+          console.error('Webhook Sync Error:', err);
+          newOrder.webhookStatus = 'Local Only (Sync Error)';
+          showToast('Order Saved Locally', 'Error syncing with cloud Excel Webhook.', true);
         }
       } else {
-        newOrder.webhookStatus = 'Local Only (No URL)';
+        newOrder.webhookStatus = 'Local Only (No Webhook)';
+        showToast('Order Saved Locally', 'Configure Webhook to auto-sync to Excel.');
       }
 
       saveOrdersToLocalStorage();
       renderOrdersTable();
 
-      // 3. Show Toast Notification
-      showToastNotification(`Order #${newOrder.id} saved & synced successfully!`);
+      // 3. Show thermal receipt option
+      showReceiptModal(newOrder);
 
-      // 4. Clear Cart for next customer
+      // 4. Reset Cart
       clearCart();
     }
 
-    // --- DEDICATED PRINT RECEIPT ACTION ---
-    function printReceiptForCurrentOrder() {
-      if (cart.length === 0) return;
-
-      const custName = document.getElementById('cust-name').value.trim() || 'Walk-in Customer';
-      const custContact = document.getElementById('cust-contact').value.trim() || 'N/A';
-      
-      const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      const total = Math.max(0, subtotal - discountAmount);
-
-      const tempOrder = {
-        id: 'PREVIEW-' + Math.floor(1000 + Math.random() * 9000),
-        date: new Date().toLocaleString(),
-        customer: custName,
-        contact: custContact,
-        rawItems: [...cart],
-        subtotal: subtotal,
-        discount: discountAmount,
-        total: total,
-        payment: paymentMethod
-      };
-
-      showReceiptModal(tempOrder);
-    }
-
-    function showToastNotification(msg) {
-      const toast = document.getElementById('pos-toast');
-      if (toast) {
-        toast.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ${msg}`;
-        toast.classList.remove('hidden');
-        setTimeout(() => {
-          toast.classList.add('hidden');
-        }, 3500);
-      }
-    }
-
-    // --- RECEIPT DISPLAY ---
+    // --- RECEIPT MODAL ---
     function showReceiptModal(order) {
       document.getElementById('receipt-id').innerText = `ORDER #${order.id}`;
       document.getElementById('receipt-date').innerText = order.date;
@@ -1241,8 +1131,22 @@
 
     function viewReceiptById(orderId) {
       const order = ordersHistory.find(o => o.id === orderId);
-      if (order) {
-        showReceiptModal(order);
+      if (order) showReceiptModal(order);
+    }
+
+    // --- OPEN CONNECTED EXCEL SPREADSHEET ---
+    function openExcelSpreadsheet() {
+      if (sheetViewerUrl) {
+        window.open(sheetViewerUrl, '_blank');
+      } else if (webhookUrl) {
+        // Fallback: If webhook exec URL is present, convert macro link to editor view
+        if (webhookUrl.includes('/macros/s/')) {
+          alert('Opening your Google Sheets Script Endpoint. You can also paste your direct Sheet Viewer URL in settings!');
+        }
+        window.open(webhookUrl, '_blank');
+      } else {
+        alert('No Excel/Google Sheet connected yet! Click the Cloud/Settings icon at top-right to paste your Sheet link.');
+        openConfigModal();
       }
     }
 
@@ -1251,25 +1155,24 @@
       const tbody = document.getElementById('orders-table-body');
       document.getElementById('order-count-badge').innerText = ordersHistory.length;
 
-      // Stats
       let totalRev = 0;
       let treatsCount = 0;
-      let salonCount = 0;
+      let repairsCount = 0;
 
       ordersHistory.forEach(o => {
         totalRev += o.total;
         if (o.rawItems) {
           o.rawItems.forEach(i => {
-            if (i.category === 'salon' || i.category === 'repairs') salonCount += i.qty;
+            if (i.category === 'repairs' || i.category === 'salon') repairsCount += i.qty;
             if (i.category === 'donuts' || i.category === 'keychains') treatsCount += i.qty;
           });
         }
       });
 
-      document.getElementById('stat-revenue').innerText = `₱${totalRev.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('stat-revenue').innerText = `₱${totalRev.toFixed(2)}`;
       document.getElementById('stat-orders-count').innerText = ordersHistory.length;
-      document.getElementById('stat-salon-count').innerText = salonCount;
       document.getElementById('stat-treats-count').innerText = treatsCount;
+      document.getElementById('stat-repairs-count').innerText = repairsCount;
 
       if (ordersHistory.length === 0) {
         tbody.innerHTML = `
@@ -1304,49 +1207,6 @@
       `).join('');
     }
 
-    // --- SHEETJS EXCEL EXPORT (.XLSX IN PESOS) ---
-    function exportToExcelFile() {
-      if (ordersHistory.length === 0) {
-        alert('No orders available to export!');
-        return;
-      }
-
-      const excelData = ordersHistory.map(o => ({
-        'Order ID': o.id,
-        'Date & Time': o.date,
-        'Customer Name': o.customer,
-        'Contact / Notes': o.contact,
-        'Items Purchased': o.items,
-        'Subtotal (PHP)': o.subtotal,
-        'Discount (PHP)': o.discount,
-        'Total Amount (PHP)': o.total,
-        'Payment Method': o.payment,
-        'Sync Status': o.webhookStatus
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      
-      const max_width = excelData.reduce((w, r) => Math.max(w, r['Items Purchased'].length), 10);
-      worksheet['!cols'] = [
-        { wch: 15 },
-        { wch: 22 },
-        { wch: 20 },
-        { wch: 20 },
-        { wch: Math.min(max_width, 50) },
-        { wch: 14 },
-        { wch: 14 },
-        { wch: 18 },
-        { wch: 15 },
-        { wch: 20 }
-      ];
-
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "TKM Sales Log");
-
-      const fileName = `TKM_Tech_Salon_Treats_Sales_${new Date().toISOString().slice(0,10)}.xlsx`;
-      XLSX.writeFile(workbook, fileName);
-    }
-
     // --- LOCAL STORAGE HELPERS ---
     function saveOrdersToLocalStorage() {
       localStorage.setItem('tkm_orders_history', JSON.stringify(ordersHistory));
@@ -1355,11 +1215,7 @@
     function loadSavedOrders() {
       const saved = localStorage.getItem('tkm_orders_history');
       if (saved) {
-        try {
-          ordersHistory = JSON.parse(saved);
-        } catch (e) {
-          ordersHistory = [];
-        }
+        try { ordersHistory = JSON.parse(saved); } catch (e) { ordersHistory = []; }
       }
     }
 
@@ -1371,28 +1227,33 @@
       }
     }
 
-    // --- WEBHOOK CONFIGURATION MODAL LOGIC ---
+    // --- WEBHOOK & SHEET CONFIGURATION ---
     function openConfigModal() {
       document.getElementById('webhook-url-input').value = webhookUrl;
+      document.getElementById('sheet-url-input').value = sheetViewerUrl;
       openModal('modal-config');
     }
 
     function saveWebhookConfig() {
-      const url = document.getElementById('webhook-url-input').value.trim();
-      webhookUrl = url;
+      webhookUrl = document.getElementById('webhook-url-input').value.trim();
+      sheetViewerUrl = document.getElementById('sheet-url-input').value.trim();
+      
       localStorage.setItem('tkm_webhook_url', webhookUrl);
+      localStorage.setItem('tkm_sheet_url', sheetViewerUrl);
+      
       updateWebhookStatusDot();
       closeModal('modal-config');
+      showToast('Settings Saved', 'Google Sheets / Excel configuration updated.');
     }
 
     function updateWebhookStatusDot() {
       const dot = document.getElementById('webhook-status-dot');
       if (webhookUrl) {
         dot.className = "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
-        dot.title = "Google Sheets / Webhook Connected";
+        dot.title = "Excel Webhook Linked";
       } else {
         dot.className = "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500";
-        dot.title = "No Webhook Configured (Local Mode)";
+        dot.title = "No Webhook Configured";
       }
     }
 
@@ -1408,22 +1269,42 @@
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ test: true, message: 'TKM POS Test Ping' })
+          body: JSON.stringify({ test: true, message: 'TKM POS Test Connection' })
         });
-        alert('Ping sent successfully! Check your Google Sheet to verify receipt.');
+        alert('Connection Ping Sent! Check your Google Sheet to verify.');
       } catch (err) {
-        alert('Failed to reach URL: ' + err.message);
+        alert('Connection failed: ' + err.message);
       }
     }
 
-    // --- GENERIC MODAL CONTROLS ---
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
+    // --- UI NOTIFICATIONS & MODALS ---
+    function showToast(title, msg, isError = false) {
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-message').innerText = msg;
+      
+      const icon = document.getElementById('toast-icon');
+      if (isError) {
+        icon.className = "w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center";
+        icon.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+      } else {
+        icon.className = "w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center";
+        icon.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
     }
 
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
   </script>
 </body>
 </html>
+
+
+
+
+
