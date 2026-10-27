@@ -122,12 +122,13 @@
 
         <div>
           <h1 class="text-xl font-display font-extrabold text-white tracking-tight flex items-center gap-2">
-            TKM <span class="text-tkm-neon font-light">Tech and Treats</span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.0</span>
+            TKM <span class="text-tkm-neon font-light">Tech, Salon & Treats</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.1</span>
           </h1>
           <p class="text-xs text-slate-400 font-medium hidden sm:block">
-            <i class="fa-solid fa-mobile-screen-button text-tkm-purple mr-1"></i> Screen Repairs &bull;
-            <i class="fa-solid fa-keychain text-tkm-pink mx-1"></i> Keychains &bull;
+            <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond &bull;
+            <i class="fa-solid fa-mobile-screen-button text-tkm-purple mx-1"></i> Tech Repairs &bull;
+            <i class="fa-solid fa-keychain text-tkm-neon mx-1"></i> Keychains &bull;
             <i class="fa-solid fa-cookie text-amber-400 ml-1"></i> Mini Donuts
           </p>
         </div>
@@ -172,7 +173,7 @@
           <!-- Search input -->
           <div class="relative w-full md:w-64">
             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Search tech, keychains, donuts..." 
+            <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Search rebond, tech, keychains, donuts..." 
                    class="w-full bg-tkm-black/60 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple">
           </div>
 
@@ -181,11 +182,14 @@
             <button onclick="selectCategory('all')" class="cat-btn active px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-purple text-white" data-cat="all">
               <i class="fa-solid fa-border-all mr-1"></i> All Items
             </button>
+            <button onclick="selectCategory('salon')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="salon">
+              <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond
+            </button>
             <button onclick="selectCategory('repairs')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="repairs">
-              <i class="fa-solid fa-screwdriver-wrench text-tkm-neon mr-1"></i> Screen Repairs
+              <i class="fa-solid fa-screwdriver-wrench text-tkm-neon mr-1"></i> Phone Repairs
             </button>
             <button onclick="selectCategory('keychains')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="keychains">
-              <i class="fa-solid fa-keychain text-tkm-pink mr-1"></i> Custom Keychains
+              <i class="fa-solid fa-keychain text-tkm-lightpurple mr-1"></i> Keychains
             </button>
             <button onclick="selectCategory('donuts')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="donuts">
               <i class="fa-solid fa-cookie text-amber-400 mr-1"></i> Mini Donuts
@@ -245,18 +249,18 @@
             <div class="space-y-1.5 text-xs text-slate-300">
               <div class="flex justify-between">
                 <span>Subtotal</span>
-                <span id="cart-subtotal" class="font-mono text-white">$0.00</span>
+                <span id="cart-subtotal" class="font-mono text-white">₱0.00</span>
               </div>
               <div class="flex justify-between items-center">
                 <span class="flex items-center gap-1">
                   Discount
                   <button onclick="toggleDiscountPrompt()" class="text-[10px] text-tkm-lightpurple underline">(Edit)</button>
                 </span>
-                <span id="cart-discount" class="font-mono text-emerald-400">-$0.00</span>
+                <span id="cart-discount" class="font-mono text-emerald-400">-₱0.00</span>
               </div>
               <div class="flex justify-between items-center text-sm font-bold text-white pt-2 border-t border-tkm-border/60">
                 <span class="text-tkm-neon font-display">TOTAL AMOUNT</span>
-                <span id="cart-total" class="text-xl font-mono text-tkm-neon">$0.00</span>
+                <span id="cart-total" class="text-xl font-mono text-tkm-neon">₱0.00</span>
               </div>
             </div>
 
@@ -268,7 +272,7 @@
                   <i class="fa-solid fa-money-bill-wave mr-1 text-emerald-400"></i> Cash
                 </button>
                 <button type="button" onclick="setPaymentMethod('GCash / E-Wallet')" id="pay-ewallet" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
-                  <i class="fa-solid fa-mobile-retro mr-1 text-sky-400"></i> E-Wallet
+                  <i class="fa-solid fa-mobile-retro mr-1 text-sky-400"></i> GCash
                 </button>
                 <button type="button" onclick="setPaymentMethod('Card')" id="pay-card" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
                   <i class="fa-solid fa-credit-card mr-1 text-tkm-pink"></i> Card
@@ -295,11 +299,11 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
           <div class="p-3 bg-tkm-purple/20 rounded-xl text-tkm-neon text-xl">
-            <i class="fa-solid fa-sack-dollar"></i>
+            <i class="fa-solid fa-peso-sign"></i>
           </div>
           <div>
             <p class="text-xs text-slate-400 font-medium">Total Sales Revenue</p>
-            <h3 id="stat-revenue" class="text-2xl font-bold font-mono text-white">$0.00</h3>
+            <h3 id="stat-revenue" class="text-2xl font-bold font-mono text-white">₱0.00</h3>
           </div>
         </div>
 
@@ -314,22 +318,22 @@
         </div>
 
         <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+          <div class="p-3 bg-tkm-pink/20 rounded-xl text-tkm-pink text-xl">
+            <i class="fa-solid fa-scissors"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 font-medium">Hair Services Done</p>
+            <h3 id="stat-salon-count" class="text-2xl font-bold text-white">0</h3>
+          </div>
+        </div>
+
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
           <div class="p-3 bg-amber-500/20 rounded-xl text-amber-400 text-xl">
             <i class="fa-solid fa-cookie"></i>
           </div>
           <div>
             <p class="text-xs text-slate-400 font-medium">Donuts & Keychains Sold</p>
             <h3 id="stat-treats-count" class="text-2xl font-bold text-white">0</h3>
-          </div>
-        </div>
-
-        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
-          <div class="p-3 bg-emerald-500/20 rounded-xl text-emerald-400 text-xl">
-            <i class="fa-solid fa-screwdriver-wrench"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-400 font-medium">Repairs Completed</p>
-            <h3 id="stat-repairs-count" class="text-2xl font-bold text-white">0</h3>
           </div>
         </div>
       </div>
@@ -342,7 +346,7 @@
             Excel Spreadsheet Order Database
           </h2>
           <p class="text-xs text-slate-400 mt-1">
-            Orders automatically log locally and push directly to your configured Excel / Google Sheets API.
+            Orders automatically log locally and push directly to your configured Excel / Google Sheets API in Pesos (₱).
           </p>
         </div>
 
@@ -394,7 +398,7 @@
 
   <!-- ==================== MODALS ==================== -->
 
-  <!-- 1. CUSTOMIZATION MODAL (For Keychains Photo Text & Screen Repair Notes) -->
+  <!-- 1. CUSTOMIZATION MODAL -->
   <div id="modal-custom" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-tkm-card border border-tkm-purple rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-tkm-border pb-3">
@@ -431,7 +435,7 @@
       <div class="space-y-3 bg-tkm-black/50 p-4 rounded-xl border border-tkm-border">
         <div>
           <label class="text-xs font-bold text-tkm-neon block mb-1">Webhook / Google Apps Script URL:</label>
-          <input type="text" id="webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec or SheetBest URL" 
+          <input type="text" id="webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec" 
                  class="w-full bg-tkm-black border border-tkm-border text-xs rounded-lg px-3 py-2 text-white font-mono focus:border-tkm-purple focus:outline-none">
         </div>
 
@@ -439,7 +443,7 @@
           <p class="font-bold text-slate-300">Quick Setup Instructions:</p>
           <ol class="list-decimal pl-4 space-y-1">
             <li>Create a Google Sheet with columns: <span class="text-tkm-lightpurple font-mono">OrderID, Date, Customer, Items, Payment, Total, Status</span></li>
-            <li>In Google Sheets, click <b>Extensions &gt; Apps Script</b> and paste a simple `doPost(e)` script.</li>
+            <li>In Google Sheets, click <b>Extensions &gt; Apps Script</b> and paste the script.</li>
             <li>Deploy as Web App (Set access to: <b>Anyone</b>) and paste the web app link above!</li>
           </ol>
         </div>
@@ -468,8 +472,8 @@
       <div id="printableReceipt" class="bg-white text-black p-5 rounded-lg shadow font-mono text-xs space-y-3">
         <!-- Receipt Header -->
         <div class="text-center border-b border-dashed border-slate-400 pb-3">
-          <h2 class="font-bold text-base tracking-wider">TKM TECH & TREATS</h2>
-          <p class="text-[10px] text-slate-600">Screen Repairs &bull; Keychains &bull; Donuts</p>
+          <h2 class="font-bold text-base tracking-wider">TKM TECH, SALON & TREATS</h2>
+          <p class="text-[10px] text-slate-600">Hair Rebond &bull; Tech Repairs &bull; Keychains &bull; Donuts</p>
           <p class="text-[10px] text-slate-500 mt-1" id="receipt-date">2026-10-27 10:00 AM</p>
           <p class="text-[10px] text-slate-700 font-bold mt-1" id="receipt-id">ORDER #TKM-8891</p>
         </div>
@@ -489,18 +493,18 @@
         <div class="border-t border-dashed border-slate-400 pt-2 space-y-1 text-right">
           <div class="flex justify-between">
             <span>Subtotal:</span>
-            <span id="receipt-subtotal">$0.00</span>
+            <span id="receipt-subtotal">₱0.00</span>
           </div>
           <div class="flex justify-between text-xs font-bold pt-1 border-t border-slate-300">
             <span>TOTAL:</span>
-            <span id="receipt-total" class="text-sm">$0.00</span>
+            <span id="receipt-total" class="text-sm">₱0.00</span>
           </div>
         </div>
 
         <!-- Footer -->
         <div class="text-center pt-3 border-t border-dashed border-slate-400 text-[10px] text-slate-600">
           <p>Thank you for choosing TKM!</p>
-          <p class="mt-0.5">Tech repairs & sweet treats in one spot.</p>
+          <p class="mt-0.5">Beauty, Tech & Sweet Treats in One Spot.</p>
         </div>
       </div>
 
@@ -519,139 +523,196 @@
 
   <!-- ==================== POS LOGIC & APPLICATION JAVASCRIPT ==================== -->
   <script>
-    // --- PRODUCT CATALOG DATA (TKM Tech & Treats) ---
+    // --- PRODUCT CATALOG DATA (TKM Tech, Salon & Treats - ALL PRICES IN PESOS ₱) ---
     const PRODUCTS = [
-      // 1. SCREEN REPAIRS
+      // 1. HAIR REBOND & SALON SERVICES
+      {
+        id: 'sal-1',
+        name: 'Long Hair Rebond',
+        category: 'salon',
+        price: 800.00,
+        icon: 'fa-scissors',
+        iconColor: 'text-tkm-pink',
+        badge: 'Salon Service',
+        customizable: true,
+        customPrompt: 'Stylist / Hair Notes (e.g. Thick hair, treated hair):'
+      },
+      {
+        id: 'sal-2',
+        name: 'Short Hair Rebond',
+        category: 'salon',
+        price: 500.00,
+        icon: 'fa-scissors',
+        iconColor: 'text-tkm-pink',
+        badge: 'Salon Service',
+        customizable: true,
+        customPrompt: 'Stylist / Hair Notes:'
+      },
+      {
+        id: 'sal-3',
+        name: 'Rebond with Color (Short Hair)',
+        category: 'salon',
+        price: 800.00,
+        icon: 'fa-wand-magic-sparkles',
+        iconColor: 'text-tkm-lightpurple',
+        badge: 'Combo Service',
+        customizable: true,
+        customPrompt: 'Color Shade / Special Request:'
+      },
+      {
+        id: 'sal-4',
+        name: 'Rebond with Color (Long Hair)',
+        category: 'salon',
+        price: 1000.00,
+        icon: 'fa-wand-magic-sparkles',
+        iconColor: 'text-tkm-lightpurple',
+        badge: 'Combo Service',
+        customizable: true,
+        customPrompt: 'Color Shade / Special Request:'
+      },
+      {
+        id: 'sal-5',
+        name: 'Normal Colors (No Bleach)',
+        category: 'salon',
+        price: 300.00,
+        icon: 'fa-paint-roller',
+        iconColor: 'text-sky-400',
+        badge: 'Hair Color',
+        customizable: true,
+        customPrompt: 'Color shade requested:'
+      },
+      {
+        id: 'sal-6',
+        name: 'Fashion Colors (With Bleach)',
+        category: 'salon',
+        price: 500.00,
+        icon: 'fa-palette',
+        iconColor: 'text-tkm-neon',
+        badge: 'Fashion Color',
+        customizable: true,
+        customPrompt: 'Bleach level / Fashion tone desired:'
+      },
+
+      // 2. PHONE REPAIRS & TECH SERVICES
       {
         id: 'rep-1',
-        name: 'iPhone Screen Replacement',
+        name: 'Phone LCD Replacement',
         category: 'repairs',
-        price: 65.00,
+        price: 200.00,
         icon: 'fa-mobile-screen-button',
         iconColor: 'text-tkm-neon',
-        badge: 'Top Service',
+        badge: 'Tech Repair',
         customizable: true,
-        customPrompt: 'Enter Phone Model & Color (e.g. iPhone 13 Black):'
+        customPrompt: 'Enter Phone Brand & Model (e.g. Samsung A12 / iPhone 11):'
       },
       {
         id: 'rep-2',
-        name: 'Android Screen Repair',
+        name: 'Battery Replacement',
         category: 'repairs',
-        price: 55.00,
-        icon: 'fa-mobile-retro',
-        iconColor: 'text-tkm-neon',
-        badge: 'Repair',
+        price: 200.00,
+        icon: 'fa-battery-full',
+        iconColor: 'text-emerald-400',
+        badge: 'Battery Swap',
         customizable: true,
-        customPrompt: 'Enter Device Brand/Model (e.g. Samsung A52):'
+        customPrompt: 'Enter Device Model:'
       },
       {
         id: 'rep-3',
         name: 'Glass Protection / Armor Installation',
         category: 'repairs',
-        price: 15.00,
+        price: 50.00,
         icon: 'fa-shield-halved',
         iconColor: 'text-sky-400',
-        badge: 'Add-on',
+        badge: 'Protection',
         customizable: false
       },
-      {
-        id: 'rep-4',
-        name: 'Full Device Diagnostic & Cleaning',
-        category: 'repairs',
-        price: 20.00,
-        icon: 'fa-screwdriver-wrench',
-        iconColor: 'text-emerald-400',
-        badge: 'Maintenance',
-        customizable: true,
-        customPrompt: 'Describe Issue / Diagnostic Notes:'
-      },
 
-      // 2. CUSTOM PICTURE KEYCHAINS
+      // 3. CUSTOM PICTURE KEYCHAINS
       {
         id: 'key-1',
         name: 'Custom Photo Acrylic Keychain',
         category: 'keychains',
-        price: 8.50,
+        price: 50.00,
         icon: 'fa-keychain',
         iconColor: 'text-tkm-pink',
         badge: 'Custom Picture',
         customizable: true,
-        customPrompt: 'Photo Reference Code / Couple Name:'
+        customPrompt: 'Photo Reference Code / Customer Name:'
       },
       {
         id: 'key-2',
         name: 'Double-Sided Memory Keychain',
         category: 'keychains',
-        price: 12.00,
+        price: 50.00,
         icon: 'fa-images',
-        iconColor: 'text-tkm-pink',
-        badge: 'Best Seller',
+        iconColor: 'text-tkm-lightpurple',
+        badge: '2-Sided Photo',
         customizable: true,
-        customPrompt: 'Side A & Side B Photo Notes:'
+        customPrompt: 'Side A & Side B Details:'
       },
       {
         id: 'key-3',
         name: 'Tech Circuit Mini Keychain',
         category: 'keychains',
-        price: 6.00,
+        price: 50.00,
         icon: 'fa-microchip',
         iconColor: 'text-tkm-neon',
-        badge: 'Tech Metallic',
+        badge: 'Tech Badge',
         customizable: false
       },
 
-      // 3. MINI DONUTS
+      // 4. MINI DONUTS (All mini donuts ₱10 base rate)
       {
         id: 'don-1',
         name: 'Pink Frosting & Sprinkles Mini Donut',
         category: 'donuts',
-        price: 1.50,
+        price: 10.00,
         icon: 'fa-cookie',
         iconColor: 'text-tkm-pink',
-        badge: 'Signature',
+        badge: 'Single Treat',
         customizable: false
       },
       {
         id: 'don-2',
         name: 'Classic Glazed Mini Donut',
         category: 'donuts',
-        price: 1.25,
+        price: 10.00,
         icon: 'fa-circle-dot',
         iconColor: 'text-amber-300',
-        badge: 'Fresh Baked',
+        badge: 'Single Treat',
         customizable: false
       },
       {
         id: 'don-3',
         name: 'Chocolate Fudge Drizzle Mini Donut',
         category: 'donuts',
-        price: 1.50,
+        price: 10.00,
         icon: 'fa-cookie-bite',
         iconColor: 'text-amber-700',
-        badge: 'Rich Chocolate',
+        badge: 'Single Treat',
         customizable: false
       },
       {
         id: 'don-4',
         name: 'Assorted Mini Donuts (Box of 6)',
         category: 'donuts',
-        price: 7.50,
+        price: 60.00,
         icon: 'fa-box-open',
         iconColor: 'text-amber-400',
-        badge: 'Value Pack',
+        badge: 'Box of 6',
         customizable: true,
-        customPrompt: 'Specify Flavor Mix (e.g., 2 Glazed, 2 Pink, 2 Choco):'
+        customPrompt: 'Specify Flavor Mix (e.g. 2 Glazed, 2 Pink, 2 Choco):'
       },
       {
         id: 'don-5',
         name: 'Party Box Mini Donuts (Box of 12)',
         category: 'donuts',
-        price: 14.00,
+        price: 120.00,
         icon: 'fa-gifts',
         iconColor: 'text-tkm-lightpurple',
-        badge: 'Party Size',
+        badge: 'Box of 12',
         customizable: true,
-        customPrompt: 'Flavor Request / Special Message on Box:'
+        customPrompt: 'Flavor Request / Box Message:'
       }
     ];
 
@@ -739,7 +800,7 @@
 
           <!-- Price & Add Button -->
           <div class="mt-4 pt-3 border-t border-tkm-border/40 flex items-center justify-between">
-            <span class="text-lg font-mono font-bold text-white">$${p.price.toFixed(2)}</span>
+            <span class="text-lg font-mono font-bold text-white">₱${p.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
             <span class="w-8 h-8 rounded-xl bg-tkm-purple/20 text-tkm-neon group-hover:bg-tkm-purple group-hover:text-white flex items-center justify-center text-xs transition">
               <i class="fa-solid fa-plus"></i>
             </span>
@@ -781,7 +842,7 @@
       document.getElementById('custom-modal-title').innerText = `Customize: ${product.name}`;
       document.getElementById('custom-modal-body').innerHTML = `
         <label class="text-xs font-bold text-slate-300 block">${product.customPrompt}</label>
-        <textarea id="custom-note-input" rows="3" placeholder="Type instructions, photo details or model info..." 
+        <textarea id="custom-note-input" rows="3" placeholder="Type instructions, hair condition, or model details..." 
                   class="w-full mt-1.5 bg-tkm-black border border-tkm-border text-xs rounded-xl p-3 text-white focus:border-tkm-purple focus:outline-none"></textarea>
       `;
       
@@ -795,7 +856,6 @@
     }
 
     function addToCart(product, customNote) {
-      // Check if item already exists with exact same note
       const existing = cart.find(item => item.id === product.id && item.note === customNote);
 
       if (existing) {
@@ -834,7 +894,7 @@
     }
 
     function toggleDiscountPrompt() {
-      const val = prompt('Enter discount amount ($):', discountAmount);
+      const val = prompt('Enter discount amount (₱):', discountAmount);
       if (val !== null) {
         const parsed = parseFloat(val);
         discountAmount = isNaN(parsed) || parsed < 0 ? 0 : parsed;
@@ -870,9 +930,9 @@
           </div>
         `;
         checkoutBtn.disabled = true;
-        document.getElementById('cart-subtotal').innerText = '$0.00';
-        document.getElementById('cart-discount').innerText = '-$0.00';
-        document.getElementById('cart-total').innerText = '$0.00';
+        document.getElementById('cart-subtotal').innerText = '₱0.00';
+        document.getElementById('cart-discount').innerText = '-₱0.00';
+        document.getElementById('cart-total').innerText = '₱0.00';
         return;
       }
 
@@ -891,19 +951,17 @@
                 ${item.name}
               </div>
               ${item.note ? `<div class="text-[10px] text-tkm-lightpurple font-mono mt-0.5 italic">Note: ${item.note}</div>` : ''}
-              <div class="text-[11px] text-slate-400 font-mono mt-1">$${item.price.toFixed(2)} x ${item.qty}</div>
+              <div class="text-[11px] text-slate-400 font-mono mt-1">₱${item.price.toFixed(2)} x ${item.qty}</div>
             </div>
 
             <div class="flex items-center space-x-2">
-              <!-- Qty controls -->
               <div class="flex items-center bg-tkm-card border border-tkm-border rounded-lg overflow-hidden">
                 <button onclick="updateCartQty(${idx}, -1)" class="px-2 py-1 hover:bg-tkm-hover text-slate-300">-</button>
                 <span class="px-2 font-mono font-bold text-white">${item.qty}</span>
                 <button onclick="updateCartQty(${idx}, 1)" class="px-2 py-1 hover:bg-tkm-hover text-slate-300">+</button>
               </div>
 
-              <!-- Item Total -->
-              <span class="font-mono font-bold text-white w-14 text-right">$${itemTotal.toFixed(2)}</span>
+              <span class="font-mono font-bold text-white w-16 text-right">₱${itemTotal.toFixed(2)}</span>
             </div>
           </div>
         `;
@@ -911,9 +969,9 @@
 
       const total = Math.max(0, subtotal - discountAmount);
 
-      document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
-      document.getElementById('cart-discount').innerText = `-$${discountAmount.toFixed(2)}`;
-      document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+      document.getElementById('cart-subtotal').innerText = `₱${subtotal.toFixed(2)}`;
+      document.getElementById('cart-discount').innerText = `-₱${discountAmount.toFixed(2)}`;
+      document.getElementById('cart-total').innerText = `₱${total.toFixed(2)}`;
     }
 
     // --- ORDER PROCESSING & EXCEL LIVE SYNC ---
@@ -942,11 +1000,11 @@
         webhookStatus: 'Pending'
       };
 
-      // 1. Add to local state
+      // 1. Save locally
       ordersHistory.unshift(newOrder);
       saveOrdersToLocalStorage();
 
-      // 2. Push to Google Sheets / Excel Webhook if configured
+      // 2. Push to Google Sheets / Excel Webhook API if configured
       if (webhookUrl) {
         try {
           newOrder.webhookStatus = 'Syncing...';
@@ -971,7 +1029,7 @@
       saveOrdersToLocalStorage();
       renderOrdersTable();
 
-      // 3. Display Thermal Receipt
+      // 3. Show Thermal Receipt
       showReceiptModal(newOrder);
 
       // 4. Reset Cart
@@ -991,12 +1049,12 @@
             <span class="font-bold">${item.qty}x</span> ${item.name}
             ${item.note ? `<div class="text-[9px] text-slate-600">(${item.note})</div>` : ''}
           </div>
-          <span class="font-mono">$${(item.price * item.qty).toFixed(2)}</span>
+          <span class="font-mono">₱${(item.price * item.qty).toFixed(2)}</span>
         </div>
       `).join('');
 
-      document.getElementById('receipt-subtotal').innerText = `$${order.subtotal.toFixed(2)}`;
-      document.getElementById('receipt-total').innerText = `$${order.total.toFixed(2)}`;
+      document.getElementById('receipt-subtotal').innerText = `₱${order.subtotal.toFixed(2)}`;
+      document.getElementById('receipt-total').innerText = `₱${order.total.toFixed(2)}`;
 
       openModal('modal-receipt');
     }
@@ -1016,22 +1074,22 @@
       // Stats
       let totalRev = 0;
       let treatsCount = 0;
-      let repairsCount = 0;
+      let salonCount = 0;
 
       ordersHistory.forEach(o => {
         totalRev += o.total;
         if (o.rawItems) {
           o.rawItems.forEach(i => {
-            if (i.category === 'repairs') repairsCount += i.qty;
+            if (i.category === 'salon') salonCount += i.qty;
             if (i.category === 'donuts' || i.category === 'keychains') treatsCount += i.qty;
           });
         }
       });
 
-      document.getElementById('stat-revenue').innerText = `$${totalRev.toFixed(2)}`;
+      document.getElementById('stat-revenue').innerText = `₱${totalRev.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
       document.getElementById('stat-orders-count').innerText = ordersHistory.length;
+      document.getElementById('stat-salon-count').innerText = salonCount;
       document.getElementById('stat-treats-count').innerText = treatsCount;
-      document.getElementById('stat-repairs-count').innerText = repairsCount;
 
       if (ordersHistory.length === 0) {
         tbody.innerHTML = `
@@ -1051,7 +1109,7 @@
           <td class="p-3.5 font-medium text-white">${o.customer}</td>
           <td class="p-3.5 max-w-xs truncate text-slate-300" title="${o.items}">${o.items}</td>
           <td class="p-3.5"><span class="px-2 py-0.5 rounded-full bg-tkm-black border border-tkm-border text-[10px] text-slate-300">${o.payment}</span></td>
-          <td class="p-3.5 font-mono font-bold text-emerald-400">$${o.total.toFixed(2)}</td>
+          <td class="p-3.5 font-mono font-bold text-emerald-400">₱${o.total.toFixed(2)}</td>
           <td class="p-3.5">
             <span class="text-[10px] px-2 py-0.5 rounded-md ${o.webhookStatus.includes('Saved') ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
               ${o.webhookStatus}
@@ -1066,50 +1124,46 @@
       `).join('');
     }
 
-    // --- SHEETJS EXCEL EXPORT (.XLSX) ---
+    // --- SHEETJS EXCEL EXPORT (.XLSX IN PESOS) ---
     function exportToExcelFile() {
       if (ordersHistory.length === 0) {
         alert('No orders available to export!');
         return;
       }
 
-      // Format dataset specifically for Excel spreadsheet matching TKM branding columns
       const excelData = ordersHistory.map(o => ({
         'Order ID': o.id,
         'Date & Time': o.date,
         'Customer Name': o.customer,
         'Contact / Notes': o.contact,
         'Items Purchased': o.items,
-        'Subtotal ($)': o.subtotal,
-        'Discount ($)': o.discount,
-        'Total Amount ($)': o.total,
+        'Subtotal (PHP)': o.subtotal,
+        'Discount (PHP)': o.discount,
+        'Total Amount (PHP)': o.total,
         'Payment Method': o.payment,
         'Sync Status': o.webhookStatus
       }));
 
-      // Create Worksheet using SheetJS
       const worksheet = XLSX.utils.json_to_sheet(excelData);
       
-      // Auto-fit column widths
       const max_width = excelData.reduce((w, r) => Math.max(w, r['Items Purchased'].length), 10);
       worksheet['!cols'] = [
-        { wch: 15 }, // ID
-        { wch: 22 }, // Date
-        { wch: 20 }, // Customer
-        { wch: 20 }, // Contact
-        { wch: Math.min(max_width, 50) }, // Items
-        { wch: 12 }, // Subtotal
-        { wch: 12 }, // Discount
-        { wch: 15 }, // Total
-        { wch: 15 }, // Payment
-        { wch: 20 }  // Status
+        { wch: 15 },
+        { wch: 22 },
+        { wch: 20 },
+        { wch: 20 },
+        { wch: Math.min(max_width, 50) },
+        { wch: 14 },
+        { wch: 14 },
+        { wch: 18 },
+        { wch: 15 },
+        { wch: 20 }
       ];
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "TKM Sales Log");
 
-      // Export file
-      const fileName = `TKM_Tech_and_Treats_Sales_${new Date().toISOString().slice(0,10)}.xlsx`;
+      const fileName = `TKM_Tech_Salon_Treats_Sales_${new Date().toISOString().slice(0,10)}.xlsx`;
       XLSX.writeFile(workbook, fileName);
     }
 
