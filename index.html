@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TKM Tech and Treats - Point of Sale</title>
+  <title>TKM Tech, Salon & Treats - Point of Sale</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -75,13 +75,10 @@
     }
 
     .neon-glow {
-      box-shadow: 0 0 20px rgba(157, 78, 221, 0.35);
+      box-shadow: 0 0 25px rgba(157, 78, 221, 0.4);
     }
     .neon-text {
-      text-shadow: 0 0 10px rgba(199, 125, 255, 0.5);
-    }
-    .neon-border {
-      border-color: rgba(157, 78, 221, 0.5);
+      text-shadow: 0 0 12px rgba(199, 125, 255, 0.6);
     }
     
     @media print {
@@ -103,313 +100,392 @@
 
 <body class="text-slate-200 font-sans min-h-screen flex flex-col antialiased selection:bg-tkm-purple selection:text-white">
 
-  <!-- TOP HEADER / BRANDING BAR -->
-  <header class="bg-tkm-card/90 backdrop-blur-md border-b border-tkm-border/80 sticky top-0 z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      
-      <!-- Logo + Brand Name -->
-      <div class="flex items-center space-x-4">
-        <div class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-lg shadow-tkm-purple/30 group cursor-pointer" onclick="switchTab('pos')">
-          <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center p-1 relative overflow-hidden">
-            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#c77dff_1px,transparent_1px)] [background-size:8px_8px]"></div>
-            <i class="fa-solid fa-wrench text-tkm-neon text-xs absolute top-1.5 right-2"></i>
+  <!-- ==================== 1. FULLSCREEN LOGIN GATEWAY ==================== -->
+  <div id="login-gateway" class="fixed inset-0 z-50 bg-tkm-black flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-tkm-card border border-tkm-border rounded-3xl p-8 shadow-2xl relative overflow-hidden neon-glow">
+      <!-- Glow Accent Orbs -->
+      <div class="absolute -top-16 -right-16 w-32 h-32 bg-tkm-purple/30 rounded-full blur-2xl"></div>
+      <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-tkm-pink/20 rounded-full blur-2xl"></div>
+
+      <!-- Header & Branding -->
+      <div class="text-center space-y-3 mb-8 relative z-10">
+        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-xl shadow-tkm-purple/40">
+          <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center relative overflow-hidden">
+            <i class="fa-solid fa-lock text-tkm-neon text-xl mb-0.5"></i>
             <span class="font-display font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-tkm-neon via-white to-tkm-lightpurple tracking-wider leading-none">TKM</span>
-            <span class="text-[8px] font-bold text-tkm-pink tracking-tighter uppercase -mt-0.5">Tech & Treats</span>
           </div>
         </div>
 
-        <div>
-          <h1 class="text-xl font-display font-extrabold text-white tracking-tight flex items-center gap-2">
-            TKM <span class="text-tkm-neon font-light">Tech, Salon & Treats</span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.2</span>
-          </h1>
-          <p class="text-xs text-slate-400 font-medium hidden sm:block">
-            <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond &bull;
-            <i class="fa-solid fa-mobile-screen-button text-tkm-purple mx-1"></i> Tech Repairs &bull;
-            <i class="fa-solid fa-keychain text-tkm-neon mx-1"></i> Keychains &bull;
-            <i class="fa-solid fa-cookie text-amber-400 ml-1"></i> Mini Donuts
-          </p>
+        <h2 class="text-2xl font-display font-black text-white tracking-wide">
+          TKM <span class="text-tkm-neon font-light">POS Access</span>
+        </h2>
+        <p class="text-xs text-slate-400">Hair Rebond &bull; Phone Repairs &bull; Keychains &bull; Mini Donuts</p>
+      </div>
+
+      <!-- Login Form -->
+      <form onsubmit="handleLogin(event)" class="space-y-4 relative z-10">
+        <!-- Error Alert Container -->
+        <div id="login-error-msg" class="hidden bg-rose-500/10 border border-rose-500/40 text-rose-300 text-xs p-3 rounded-xl flex items-center gap-2">
+          <i class="fa-solid fa-circle-exclamation text-rose-400"></i>
+          <span id="error-text">Invalid username or password!</span>
         </div>
+
+        <!-- Username Input -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Username</label>
+          <div class="relative">
+            <i class="fa-solid fa-user-gear absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+            <input type="text" id="login-username" required placeholder="Enter admin username"
+                   class="w-full bg-tkm-black/80 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple transition">
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+            <input type="password" id="login-password" required placeholder="Enter password"
+                   class="w-full bg-tkm-black/80 border border-tkm-border text-sm rounded-xl pl-10 pr-10 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple transition">
+            
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition">
+              <i id="password-eye-icon" class="fa-solid fa-eye text-xs"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="w-full py-3.5 mt-2 rounded-xl font-display font-extrabold text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>ENTER POS TERMINAL</span>
+        </button>
+      </form>
+
+      <!-- Footer Info -->
+      <div class="mt-6 text-center text-[11px] text-slate-500 border-t border-tkm-border/60 pt-4">
+        Protected POS Gateway &bull; Authorized Personnel Only
       </div>
-
-      <!-- Navigation & Action Buttons -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- POS Switcher Button -->
-        <button id="nav-pos-btn" onclick="switchTab('pos')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple">
-          <i class="fa-solid fa-cash-register"></i>
-          <span class="hidden md:inline">POS Terminal</span>
-        </button>
-
-        <!-- Orders & Excel Hub Button -->
-        <button id="nav-orders-btn" onclick="switchTab('orders')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition">
-          <i class="fa-solid fa-file-excel text-emerald-400"></i>
-          <span class="hidden md:inline">Orders & Sync Hub</span>
-          <span id="order-count-badge" class="ml-1 text-xs px-2 py-0.5 bg-tkm-purple/40 text-tkm-neon rounded-full">0</span>
-        </button>
-
-        <!-- Google Sheets Sync Configuration -->
-        <button onclick="openConfigModal()" title="Excel / Google Sheets Webhook Settings" class="p-2.5 rounded-xl bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple hover:text-white transition relative">
-          <i class="fa-solid fa-cloud-arrow-up text-tkm-neon"></i>
-          <span id="webhook-status-dot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500"></span>
-        </button>
-      </div>
-
     </div>
-  </header>
+  </div>
 
-  <!-- MAIN CONTAINER -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
 
-    <!-- ==================== POS TERMINAL VIEW ==================== -->
-    <div id="view-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      
-      <!-- LEFT / MAIN: CATEGORIES & PRODUCT GRID (8 Cols) -->
-      <div class="lg:col-span-7 xl:col-span-8 space-y-5">
+  <!-- ==================== 2. MAIN POS APP (HIDDEN BEFORE LOGIN) ==================== -->
+  <div id="main-app" class="hidden flex-col min-h-screen">
+
+    <!-- TOP HEADER / BRANDING BAR -->
+    <header class="bg-tkm-card/90 backdrop-blur-md border-b border-tkm-border/80 sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
-        <!-- Search & Category Filters -->
-        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-3.5 shadow-xl flex flex-col md:flex-row gap-3 items-center justify-between">
-          <!-- Search input -->
-          <div class="relative w-full md:w-64">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Search rebond, tech, keychains, donuts..." 
-                   class="w-full bg-tkm-black/60 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple">
-          </div>
-
-          <!-- Category Buttons -->
-          <div class="flex items-center space-x-1.5 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-            <button onclick="selectCategory('all')" class="cat-btn active px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-purple text-white" data-cat="all">
-              <i class="fa-solid fa-border-all mr-1"></i> All Items
-            </button>
-            <button onclick="selectCategory('salon')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="salon">
-              <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond
-            </button>
-            <button onclick="selectCategory('repairs')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="repairs">
-              <i class="fa-solid fa-screwdriver-wrench text-tkm-neon mr-1"></i> Phone Repairs
-            </button>
-            <button onclick="selectCategory('keychains')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="keychains">
-              <i class="fa-solid fa-keychain text-tkm-lightpurple mr-1"></i> Keychains
-            </button>
-            <button onclick="selectCategory('donuts')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="donuts">
-              <i class="fa-solid fa-cookie text-amber-400 mr-1"></i> Mini Donuts
-            </button>
-          </div>
-        </div>
-
-        <!-- Product Cards Grid -->
-        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <!-- Dynamic JS Products Injected Here -->
-        </div>
-
-      </div>
-
-      <!-- RIGHT: LIVE ORDER CART (4 Cols) -->
-      <div class="lg:col-span-5 xl:col-span-4">
-        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-2xl flex flex-col h-[calc(100vh-140px)] sticky top-24">
-          
-          <!-- Cart Header -->
-          <div class="flex items-center justify-between pb-4 border-b border-tkm-border">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-lg bg-tkm-purple/20 flex items-center justify-center text-tkm-neon">
-                <i class="fa-solid fa-basket-shopping"></i>
-              </div>
-              <h2 class="text-lg font-display font-bold text-white">Current Order</h2>
-            </div>
-            <button onclick="clearCart()" class="text-xs text-slate-400 hover:text-rose-400 transition flex items-center gap-1">
-              <i class="fa-solid fa-trash-can"></i> Clear
-            </button>
-          </div>
-
-          <!-- Customer Info Fields -->
-          <div class="py-3 border-b border-tkm-border/50 grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Customer Name</label>
-              <input type="text" id="cust-name" placeholder="Walk-in Customer" class="w-full mt-1 bg-tkm-black/60 border border-tkm-border text-xs rounded-lg px-2.5 py-1.5 text-white focus:border-tkm-purple focus:outline-none">
-            </div>
-            <div>
-              <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Contact / Notes</label>
-              <input type="text" id="cust-contact" placeholder="Phone or Order Notes" class="w-full mt-1 bg-tkm-black/60 border border-tkm-border text-xs rounded-lg px-2.5 py-1.5 text-white focus:border-tkm-purple focus:outline-none">
+        <!-- Logo + Brand Name -->
+        <div class="flex items-center space-x-4">
+          <div class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-lg shadow-tkm-purple/30 group cursor-pointer" onclick="switchTab('pos')">
+            <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center p-1 relative overflow-hidden">
+              <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#c77dff_1px,transparent_1px)] [background-size:8px_8px]"></div>
+              <i class="fa-solid fa-wrench text-tkm-neon text-xs absolute top-1.5 right-2"></i>
+              <span class="font-display font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-tkm-neon via-white to-tkm-lightpurple tracking-wider leading-none">TKM</span>
+              <span class="text-[8px] font-bold text-tkm-pink tracking-tighter uppercase -mt-0.5">Tech & Treats</span>
             </div>
           </div>
 
-          <!-- Cart Items Scroll Area -->
-          <div id="cart-items" class="flex-1 overflow-y-auto py-3 space-y-3 pr-1">
-            <!-- Empty Cart State -->
-            <div id="empty-cart-msg" class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
-              <i class="fa-solid fa-cart-flatbed text-4xl mb-3 text-tkm-border"></i>
-              <p class="text-sm font-medium">Cart is empty</p>
-              <p class="text-xs text-slate-600 mt-1">Select items from catalog to start order</p>
-            </div>
-          </div>
-
-          <!-- Order Summary & Checkout Area -->
-          <div class="pt-4 border-t border-tkm-border space-y-3 bg-tkm-card/50">
-            <!-- Calculations -->
-            <div class="space-y-1.5 text-xs text-slate-300">
-              <div class="flex justify-between">
-                <span>Subtotal</span>
-                <span id="cart-subtotal" class="font-mono text-white">₱0.00</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="flex items-center gap-1">
-                  Discount
-                  <button onclick="toggleDiscountPrompt()" class="text-[10px] text-tkm-lightpurple underline">(Edit)</button>
-                </span>
-                <span id="cart-discount" class="font-mono text-emerald-400">-₱0.00</span>
-              </div>
-              <div class="flex justify-between items-center text-sm font-bold text-white pt-2 border-t border-tkm-border/60">
-                <span class="text-tkm-neon font-display">TOTAL AMOUNT</span>
-                <span id="cart-total" class="text-xl font-mono text-tkm-neon">₱0.00</span>
-              </div>
-            </div>
-
-            <!-- Payment Method Selector -->
-            <div>
-              <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">Payment Method</label>
-              <div class="grid grid-cols-3 gap-2 text-xs">
-                <button type="button" onclick="setPaymentMethod('Cash')" id="pay-cash" class="pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition">
-                  <i class="fa-solid fa-money-bill-wave mr-1 text-emerald-400"></i> Cash
-                </button>
-                <button type="button" onclick="setPaymentMethod('GCash / E-Wallet')" id="pay-ewallet" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
-                  <i class="fa-solid fa-mobile-retro mr-1 text-sky-400"></i> GCash
-                </button>
-                <button type="button" onclick="setPaymentMethod('Card')" id="pay-card" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
-                  <i class="fa-solid fa-credit-card mr-1 text-tkm-pink"></i> Card
-                </button>
-              </div>
-            </div>
-
-            <!-- SEPARATED ACTIONS: Save Order (Auto-Excel Sync) vs Print Receipt -->
-            <div class="grid grid-cols-2 gap-2 pt-1">
-              <!-- Save Order Button -->
-              <button id="save-order-btn" onclick="saveOrder()" disabled 
-                      class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-emerald-600 to-teal-500 shadow-lg shadow-emerald-600/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                <i class="fa-solid fa-floppy-disk text-sm"></i>
-                <span>SAVE ORDER</span>
-              </button>
-
-              <!-- Print Receipt Button -->
-              <button id="print-receipt-btn" onclick="printReceiptForCurrentOrder()" disabled 
-                      class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                <i class="fa-solid fa-print text-sm"></i>
-                <span>PRINT RECEIPT</span>
-              </button>
-            </div>
-
-            <!-- Inline Success / Notification Toast -->
-            <div id="pos-toast" class="hidden text-center p-2 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition">
-              <i class="fa-solid fa-circle-check mr-1"></i> Order saved & auto-synced to Excel!
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ==================== ORDERS & EXCEL SYNC HUB VIEW ==================== -->
-    <div id="view-orders" class="hidden space-y-6">
-      
-      <!-- Stats Overview Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
-          <div class="p-3 bg-tkm-purple/20 rounded-xl text-tkm-neon text-xl">
-            <i class="fa-solid fa-peso-sign"></i>
-          </div>
           <div>
-            <p class="text-xs text-slate-400 font-medium">Total Sales Revenue</p>
-            <h3 id="stat-revenue" class="text-2xl font-bold font-mono text-white">₱0.00</h3>
+            <h1 class="text-xl font-display font-extrabold text-white tracking-tight flex items-center gap-2">
+              TKM <span class="text-tkm-neon font-light">Tech, Salon & Treats</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.1</span>
+            </h1>
+            <p class="text-xs text-slate-400 font-medium hidden sm:block">
+              <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond &bull;
+              <i class="fa-solid fa-mobile-screen-button text-tkm-purple mx-1"></i> Phone Repairs &bull;
+              <i class="fa-solid fa-keychain text-tkm-neon mx-1"></i> Keychains &bull;
+              <i class="fa-solid fa-cookie text-amber-400 ml-1"></i> Mini Donuts
+            </p>
           </div>
         </div>
 
-        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
-          <div class="p-3 bg-sky-500/20 rounded-xl text-sky-400 text-xl">
-            <i class="fa-solid fa-receipt"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-400 font-medium">Total Orders Placed</p>
-            <h3 id="stat-orders-count" class="text-2xl font-bold text-white">0</h3>
-          </div>
-        </div>
+        <!-- Navigation & Action Buttons -->
+        <div class="flex items-center space-x-2 sm:space-x-3">
+          <!-- POS Switcher Button -->
+          <button id="nav-pos-btn" onclick="switchTab('pos')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple">
+            <i class="fa-solid fa-cash-register"></i>
+            <span class="hidden md:inline">POS Terminal</span>
+          </button>
 
-        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
-          <div class="p-3 bg-tkm-pink/20 rounded-xl text-tkm-pink text-xl">
-            <i class="fa-solid fa-scissors"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-400 font-medium">Hair Services Done</p>
-            <h3 id="stat-salon-count" class="text-2xl font-bold text-white">0</h3>
-          </div>
-        </div>
-
-        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
-          <div class="p-3 bg-amber-500/20 rounded-xl text-amber-400 text-xl">
-            <i class="fa-solid fa-cookie"></i>
-          </div>
-          <div>
-            <p class="text-xs text-slate-400 font-medium">Donuts & Keychains Sold</p>
-            <h3 id="stat-treats-count" class="text-2xl font-bold text-white">0</h3>
-          </div>
-        </div>
-      </div>
-
-      <!-- Excel Hub Header & Export Controls -->
-      <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-display font-bold text-white flex items-center gap-2">
+          <!-- Orders & Excel Hub Button -->
+          <button id="nav-orders-btn" onclick="switchTab('orders')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition">
             <i class="fa-solid fa-file-excel text-emerald-400"></i>
-            Excel Spreadsheet Order Database
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">
-            Orders automatically log locally and push directly to your configured Excel / Google Sheets API in Pesos (₱).
-          </p>
-        </div>
-
-        <div class="flex items-center space-x-3 w-full md:w-auto">
-          <!-- Direct Download Formatted Excel File Button -->
-          <button onclick="exportToExcelFile()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
-            <i class="fa-solid fa-download"></i>
-            Export Styled .XLSX Spreadsheet
+            <span class="hidden md:inline">Orders & Sync Hub</span>
+            <span id="order-count-badge" class="ml-1 text-xs px-2 py-0.5 bg-tkm-purple/40 text-tkm-neon rounded-full">0</span>
           </button>
 
-          <!-- Clear All Logs Button -->
-          <button onclick="clearAllOrders()" class="px-3 py-2.5 rounded-xl bg-tkm-hover text-rose-400 border border-tkm-border hover:bg-rose-500/10 text-xs font-semibold transition" title="Clear History">
-            <i class="fa-solid fa-trash-can"></i>
+          <!-- Google Sheets Sync Configuration -->
+          <button onclick="openConfigModal()" title="Google Sheets / Excel Cloud Webhook Config" class="p-2.5 rounded-xl bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple hover:text-white transition relative">
+            <i class="fa-solid fa-cloud-arrow-up text-tkm-neon"></i>
+            <span id="webhook-status-dot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500"></span>
+          </button>
+
+          <!-- Logout Button -->
+          <button onclick="handleLogout()" title="Log out" class="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500 hover:text-white transition">
+            <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
-      </div>
 
-      <!-- Orders Data Table -->
-      <div class="bg-tkm-card border border-tkm-border rounded-2xl shadow-xl overflow-hidden">
-        <div class="p-4 border-b border-tkm-border flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-200">Recent Transactions Log</h3>
-          <span class="text-xs text-slate-400">Live updated</span>
+      </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+      <!-- ==================== POS TERMINAL VIEW ==================== -->
+      <div id="view-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT / MAIN: CATEGORIES & PRODUCT GRID (8 Cols) -->
+        <div class="lg:col-span-7 xl:col-span-8 space-y-5">
+          
+          <!-- Search & Category Filters -->
+          <div class="bg-tkm-card border border-tkm-border rounded-2xl p-3.5 shadow-xl flex flex-col md:flex-row gap-3 items-center justify-between">
+            <!-- Search input -->
+            <div class="relative w-full md:w-64">
+              <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Search rebond, tech, keychains, donuts..." 
+                     class="w-full bg-tkm-black/60 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple">
+            </div>
+
+            <!-- Category Buttons -->
+            <div class="flex items-center space-x-1.5 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+              <button onclick="selectCategory('all')" class="cat-btn active px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-purple text-white" data-cat="all">
+                <i class="fa-solid fa-border-all mr-1"></i> All Items
+              </button>
+              <button onclick="selectCategory('salon')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="salon">
+                <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond
+              </button>
+              <button onclick="selectCategory('repairs')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="repairs">
+                <i class="fa-solid fa-screwdriver-wrench text-tkm-neon mr-1"></i> Phone Repairs
+              </button>
+              <button onclick="selectCategory('keychains')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="keychains">
+                <i class="fa-solid fa-keychain text-tkm-lightpurple mr-1"></i> Keychains
+              </button>
+              <button onclick="selectCategory('donuts')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="donuts">
+                <i class="fa-solid fa-cookie text-amber-400 mr-1"></i> Mini Donuts
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Cards Grid -->
+          <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <!-- Dynamic JS Products Injected Here -->
+          </div>
+
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
-            <thead class="bg-tkm-black/60 text-slate-400 uppercase tracking-wider font-semibold border-b border-tkm-border">
-              <tr>
-                <th class="p-3.5">Order ID</th>
-                <th class="p-3.5">Date & Time</th>
-                <th class="p-3.5">Customer</th>
-                <th class="p-3.5">Items Summary</th>
-                <th class="p-3.5">Payment</th>
-                <th class="p-3.5">Total Amount</th>
-                <th class="p-3.5">Excel Webhook</th>
-                <th class="p-3.5 text-center">Receipt</th>
-              </tr>
-            </thead>
-            <tbody id="orders-table-body" class="divide-y divide-tkm-border/50">
-              <!-- JS Populated Orders -->
-            </tbody>
-          </table>
+        <!-- RIGHT: LIVE ORDER CART (4 Cols) -->
+        <div class="lg:col-span-5 xl:col-span-4">
+          <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-2xl flex flex-col h-[calc(100vh-140px)] sticky top-24">
+            
+            <!-- Cart Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-tkm-border">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-tkm-purple/20 flex items-center justify-center text-tkm-neon">
+                  <i class="fa-solid fa-basket-shopping"></i>
+                </div>
+                <h2 class="text-lg font-display font-bold text-white">Current Order</h2>
+              </div>
+              <button onclick="clearCart()" class="text-xs text-slate-400 hover:text-rose-400 transition flex items-center gap-1">
+                <i class="fa-solid fa-trash-can"></i> Clear
+              </button>
+            </div>
+
+            <!-- Customer Info Fields -->
+            <div class="py-3 border-b border-tkm-border/50 grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Customer Name</label>
+                <input type="text" id="cust-name" placeholder="Walk-in Customer" class="w-full mt-1 bg-tkm-black/60 border border-tkm-border text-xs rounded-lg px-2.5 py-1.5 text-white focus:border-tkm-purple focus:outline-none">
+              </div>
+              <div>
+                <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Contact / Notes</label>
+                <input type="text" id="cust-contact" placeholder="Phone or Order Notes" class="w-full mt-1 bg-tkm-black/60 border border-tkm-border text-xs rounded-lg px-2.5 py-1.5 text-white focus:border-tkm-purple focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Cart Items Scroll Area -->
+            <div id="cart-items" class="flex-1 overflow-y-auto py-3 space-y-3 pr-1">
+              <!-- Empty Cart State -->
+              <div id="empty-cart-msg" class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
+                <i class="fa-solid fa-cart-flatbed text-4xl mb-3 text-tkm-border"></i>
+                <p class="text-sm font-medium">Cart is empty</p>
+                <p class="text-xs text-slate-600 mt-1">Select items from catalog to start order</p>
+              </div>
+            </div>
+
+            <!-- Order Summary & Checkout Area -->
+            <div class="pt-4 border-t border-tkm-border space-y-3 bg-tkm-card/50">
+              <!-- Calculations -->
+              <div class="space-y-1.5 text-xs text-slate-300">
+                <div class="flex justify-between">
+                  <span>Subtotal</span>
+                  <span id="cart-subtotal" class="font-mono text-white">₱0.00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="flex items-center gap-1">
+                    Discount
+                    <button onclick="toggleDiscountPrompt()" class="text-[10px] text-tkm-lightpurple underline">(Edit)</button>
+                  </span>
+                  <span id="cart-discount" class="font-mono text-emerald-400">-₱0.00</span>
+                </div>
+                <div class="flex justify-between items-center text-sm font-bold text-white pt-2 border-t border-tkm-border/60">
+                  <span class="text-tkm-neon font-display">TOTAL AMOUNT</span>
+                  <span id="cart-total" class="text-xl font-mono text-tkm-neon">₱0.00</span>
+                </div>
+              </div>
+
+              <!-- Payment Method Selector -->
+              <div>
+                <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">Payment Method</label>
+                <div class="grid grid-cols-3 gap-2 text-xs">
+                  <button type="button" onclick="setPaymentMethod('Cash')" id="pay-cash" class="pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition">
+                    <i class="fa-solid fa-money-bill-wave mr-1 text-emerald-400"></i> Cash
+                  </button>
+                  <button type="button" onclick="setPaymentMethod('GCash / E-Wallet')" id="pay-ewallet" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
+                    <i class="fa-solid fa-mobile-retro mr-1 text-sky-400"></i> GCash
+                  </button>
+                  <button type="button" onclick="setPaymentMethod('Card')" id="pay-card" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
+                    <i class="fa-solid fa-credit-card mr-1 text-tkm-pink"></i> Card
+                  </button>
+                </div>
+              </div>
+
+              <!-- SEPARATED ACTIONS: Save Order (Auto-Excel Sync) vs Print Receipt -->
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <!-- Save Order Button -->
+                <button id="save-order-btn" onclick="saveOrder()" disabled 
+                        class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-emerald-600 to-teal-500 shadow-lg shadow-emerald-600/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-floppy-disk text-sm"></i>
+                  <span>SAVE ORDER</span>
+                </button>
+
+                <!-- Print Receipt Button -->
+                <button id="print-receipt-btn" onclick="printReceiptForCurrentOrder()" disabled 
+                        class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-print text-sm"></i>
+                  <span>PRINT RECEIPT</span>
+                </button>
+              </div>
+
+              <!-- Inline Success / Notification Toast -->
+              <div id="pos-toast" class="hidden text-center p-2 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition">
+                <i class="fa-solid fa-circle-check mr-1"></i> Order saved & auto-synced to Excel!
+              </div>
+
+            </div>
+
+          </div>
         </div>
+
       </div>
 
-    </div>
+      <!-- ==================== ORDERS & EXCEL SYNC HUB VIEW ==================== -->
+      <div id="view-orders" class="hidden space-y-6">
+        
+        <!-- Stats Overview Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+            <div class="p-3 bg-tkm-purple/20 rounded-xl text-tkm-neon text-xl">
+              <i class="fa-solid fa-peso-sign"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Total Sales Revenue</p>
+              <h3 id="stat-revenue" class="text-2xl font-bold font-mono text-white">₱0.00</h3>
+            </div>
+          </div>
 
-  </main>
+          <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+            <div class="p-3 bg-sky-500/20 rounded-xl text-sky-400 text-xl">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Total Orders Placed</p>
+              <h3 id="stat-orders-count" class="text-2xl font-bold text-white">0</h3>
+            </div>
+          </div>
+
+          <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+            <div class="p-3 bg-tkm-pink/20 rounded-xl text-tkm-pink text-xl">
+              <i class="fa-solid fa-scissors"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Hair Services / Repairs</p>
+              <h3 id="stat-salon-count" class="text-2xl font-bold text-white">0</h3>
+            </div>
+          </div>
+
+          <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+            <div class="p-3 bg-amber-500/20 rounded-xl text-amber-400 text-xl">
+              <i class="fa-solid fa-cookie"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Donuts & Keychains Sold</p>
+              <h3 id="stat-treats-count" class="text-2xl font-bold text-white">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Excel Hub Header & Export Controls -->
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-display font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-file-excel text-emerald-400"></i>
+              Excel Spreadsheet Order Database
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Orders automatically log locally and push directly to your configured Excel / Google Sheets API in Pesos (₱).
+            </p>
+          </div>
+
+          <div class="flex items-center space-x-3 w-full md:w-auto">
+            <!-- Direct Download Formatted Excel File Button -->
+            <button onclick="exportToExcelFile()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
+              <i class="fa-solid fa-download"></i>
+              Export Styled .XLSX Spreadsheet
+            </button>
+
+            <!-- Clear All Logs Button -->
+            <button onclick="clearAllOrders()" class="px-3 py-2.5 rounded-xl bg-tkm-hover text-rose-400 border border-tkm-border hover:bg-rose-500/10 text-xs font-semibold transition" title="Clear History">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Orders Data Table -->
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl shadow-xl overflow-hidden">
+          <div class="p-4 border-b border-tkm-border flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-200">Recent Transactions Log</h3>
+            <span class="text-xs text-slate-400">Live updated</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-tkm-black/60 text-slate-400 uppercase tracking-wider font-semibold border-b border-tkm-border">
+                <tr>
+                  <th class="p-3.5">Order ID</th>
+                  <th class="p-3.5">Date & Time</th>
+                  <th class="p-3.5">Customer</th>
+                  <th class="p-3.5">Items Summary</th>
+                  <th class="p-3.5">Payment</th>
+                  <th class="p-3.5">Total Amount</th>
+                  <th class="p-3.5">Excel Webhook</th>
+                  <th class="p-3.5 text-center">Receipt</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body" class="divide-y divide-tkm-border/50">
+                <!-- JS Populated Orders -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
 
   <!-- ==================== MODALS ==================== -->
 
@@ -488,7 +564,7 @@
         <!-- Receipt Header -->
         <div class="text-center border-b border-dashed border-slate-400 pb-3">
           <h2 class="font-bold text-base tracking-wider">TKM TECH, SALON & TREATS</h2>
-          <p class="text-[10px] text-slate-600">Hair Rebond &bull; Tech Repairs &bull; Keychains &bull; Donuts</p>
+          <p class="text-[10px] text-slate-600">Hair Rebond &bull; Phone Repairs &bull; Keychains &bull; Donuts</p>
           <p class="text-[10px] text-slate-500 mt-1" id="receipt-date">2026-10-27 10:00 AM</p>
           <p class="text-[10px] text-slate-700 font-bold mt-1" id="receipt-id">ORDER #TKM-8891</p>
         </div>
@@ -538,6 +614,10 @@
 
   <!-- ==================== POS LOGIC & APPLICATION JAVASCRIPT ==================== -->
   <script>
+    // --- CREDENTIALS CONFIGURATION ---
+    const ADMIN_USER = "tkm_admin";
+    const ADMIN_PASS = "tkm@2026";
+
     // --- PRODUCT CATALOG DATA (TKM Tech, Salon & Treats - ALL PRICES IN PESOS ₱) ---
     const PRODUCTS = [
       // 1. HAIR REBOND & SALON SERVICES
@@ -565,7 +645,7 @@
       },
       {
         id: 'sal-3',
-        name: 'Rebond with Color (Short Hair)',
+        name: 'Rebond with Color Short Hair',
         category: 'salon',
         price: 800.00,
         icon: 'fa-wand-magic-sparkles',
@@ -576,7 +656,7 @@
       },
       {
         id: 'sal-4',
-        name: 'Rebond with Color (Long Hair)',
+        name: 'Rebond with Color Long Hair',
         category: 'salon',
         price: 1000.00,
         icon: 'fa-wand-magic-sparkles',
@@ -587,7 +667,7 @@
       },
       {
         id: 'sal-5',
-        name: 'Normal Colors (No Bleach)',
+        name: 'Normal colors (No Bleach)',
         category: 'salon',
         price: 300.00,
         icon: 'fa-paint-roller',
@@ -598,7 +678,7 @@
       },
       {
         id: 'sal-6',
-        name: 'Fashion Colors (With Bleach)',
+        name: 'Fashion colors (With Bleach)',
         category: 'salon',
         price: 500.00,
         icon: 'fa-palette',
@@ -611,7 +691,7 @@
       // 2. PHONE REPAIRS & TECH SERVICES
       {
         id: 'rep-1',
-        name: 'Phone LCD Replacement',
+        name: 'LCD Screen Replacement',
         category: 'repairs',
         price: 200.00,
         icon: 'fa-mobile-screen-button',
@@ -633,12 +713,12 @@
       },
       {
         id: 'rep-3',
-        name: 'Glass Protection / Armor Installation',
+        name: 'Full Phone Cleaning & Maintenance',
         category: 'repairs',
         price: 50.00,
         icon: 'fa-shield-halved',
         iconColor: 'text-sky-400',
-        badge: 'Protection',
+        badge: 'Maintenance',
         customizable: false
       },
 
@@ -656,7 +736,7 @@
       },
       {
         id: 'key-2',
-        name: 'Double-Sided Memory Keychain',
+        name: 'Double-Sided Picture Keychain',
         category: 'keychains',
         price: 50.00,
         icon: 'fa-images',
@@ -665,18 +745,8 @@
         customizable: true,
         customPrompt: 'Side A & Side B Details:'
       },
-      {
-        id: 'key-3',
-        name: 'Tech Circuit Mini Keychain',
-        category: 'keychains',
-        price: 50.00,
-        icon: 'fa-microchip',
-        iconColor: 'text-tkm-neon',
-        badge: 'Tech Badge',
-        customizable: false
-      },
 
-      // 4. MINI DONUTS (All mini donuts ₱10 base rate)
+      // 4. MINI DONUTS
       {
         id: 'don-1',
         name: 'Pink Frosting & Sprinkles Mini Donut',
@@ -740,13 +810,69 @@
     let pendingCustomItem = null;
     let webhookUrl = localStorage.getItem('tkm_webhook_url') || '';
 
-    // --- INITIALIZATION ---
+    // --- INITIALIZATION & AUTH CHECK ---
     window.onload = function() {
-      loadSavedOrders();
-      renderProducts();
-      updateCartUI();
-      updateWebhookStatusDot();
+      checkAuthSession();
     };
+
+    function checkAuthSession() {
+      const isAuthenticated = sessionStorage.getItem('tkm_authenticated');
+      const gateway = document.getElementById('login-gateway');
+      const mainApp = document.getElementById('main-app');
+
+      if (isAuthenticated === 'true') {
+        gateway.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+        mainApp.classList.add('flex');
+        
+        loadSavedOrders();
+        renderProducts();
+        updateCartUI();
+        updateWebhookStatusDot();
+      } else {
+        gateway.classList.remove('hidden');
+        mainApp.classList.add('hidden');
+        mainApp.classList.remove('flex');
+      }
+    }
+
+    // --- LOGIN & LOGOUT HANDLERS ---
+    function handleLogin(event) {
+      event.preventDefault();
+      const user = document.getElementById('login-username').value.trim();
+      const pass = document.getElementById('login-password').value.trim();
+      const errorMsg = document.getElementById('login-error-msg');
+
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        sessionStorage.setItem('tkm_authenticated', 'true');
+        errorMsg.classList.add('hidden');
+        checkAuthSession();
+      } else {
+        document.getElementById('error-text').innerText = "Incorrect username or password.";
+        errorMsg.classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('tkm_authenticated');
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      document.getElementById('login-error-msg').classList.add('hidden');
+      checkAuthSession();
+    }
+
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('login-password');
+      const eyeIcon = document.getElementById('password-eye-icon');
+
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        passInput.type = 'password';
+        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    }
 
     // --- TAB SWITCHING ---
     function switchTab(tab) {
@@ -1134,7 +1260,7 @@
         totalRev += o.total;
         if (o.rawItems) {
           o.rawItems.forEach(i => {
-            if (i.category === 'salon') salonCount += i.qty;
+            if (i.category === 'salon' || i.category === 'repairs') salonCount += i.qty;
             if (i.category === 'donuts' || i.category === 'keychains') treatsCount += i.qty;
           });
         }
