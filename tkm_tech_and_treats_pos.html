@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TKM Tech and Treats - Point of Sale</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- SheetJS for Excel (.xlsx) Exporting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            tkm: {
+              black: '#0a0812',
+              card: '#141024',
+              hover: '#1e1836',
+              border: '#2a224a',
+              purple: '#9d4edd',
+              lightpurple: '#c77dff',
+              neon: '#e0aaff',
+              pink: '#ff70a6',
+              silver: '#e2e8f0',
+              accent: '#3c096c'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            display: ['Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Circuit Tech Pattern Background */
+    body {
+      background-color: #0a0812;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(157, 78, 221, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(255, 112, 166, 0.08) 0%, transparent 40%),
+        linear-gradient(to right, rgba(42, 34, 74, 0.15) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(42, 34, 74, 0.15) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0812;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a224a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9d4edd;
+    }
+
+    .neon-glow {
+      box-shadow: 0 0 20px rgba(157, 78, 221, 0.35);
+    }
+    .neon-text {
+      text-shadow: 0 0 10px rgba(199, 125, 255, 0.5);
+    }
+    .neon-border {
+      border-color: rgba(157, 78, 221, 0.5);
+    }
+    
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableReceipt, #printableReceipt * {
+        visibility: visible;
+      }
+      #printableReceipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body class="text-slate-200 font-sans min-h-screen flex flex-col antialiased selection:bg-tkm-purple selection:text-white">
+
+  <!-- TOP HEADER / BRANDING BAR -->
+  <header class="bg-tkm-card/90 backdrop-blur-md border-b border-tkm-border/80 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo + Brand Name -->
+      <div class="flex items-center space-x-4">
+        <!-- SVG TKM Logo Badge Replica -->
+        <div class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-lg shadow-tkm-purple/30 group cursor-pointer" onclick="switchTab('pos')">
+          <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center p-1 relative overflow-hidden">
+            <!-- Background Circuit Effect -->
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#c77dff_1px,transparent_1px)] [background-size:8px_8px]"></div>
+            <i class="fa-solid fa-wrench text-tkm-neon text-xs absolute top-1.5 right-2"></i>
+            <span class="font-display font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-tkm-neon via-white to-tkm-lightpurple tracking-wider leading-none">TKM</span>
+            <span class="text-[8px] font-bold text-tkm-pink tracking-tighter uppercase -mt-0.5">Tech & Treats</span>
+          </div>
+        </div>
+
+        <div>
+          <h1 class="text-xl font-display font-extrabold text-white tracking-tight flex items-center gap-2">
+            TKM <span class="text-tkm-neon font-light">Tech and Treats</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.0</span>
+          </h1>
+          <p class="text-xs text-slate-400 font-medium hidden sm:block">
+            <i class="fa-solid fa-mobile-screen-button text-tkm-purple mr-1"></i> Screen Repairs &bull;
+            <i class="fa-solid fa-keychain text-tkm-pink mx-1"></i> Keychains &bull;
+            <i class="fa-solid fa-cookie text-amber-400 ml-1"></i> Mini Donuts
+          </p>
+        </div>
+      </div>
+
+      <!-- Navigation & Action Buttons -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- POS Switcher Button -->
+        <button id="nav-pos-btn" onclick="switchTab('pos')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple">
+          <i class="fa-solid fa-cash-register"></i>
+          <span class="hidden md:inline">POS Terminal</span>
+        </button>
+
+        <!-- Orders & Excel Hub Button -->
+        <button id="nav-orders-btn" onclick="switchTab('orders')" class="px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition">
+          <i class="fa-solid fa-file-excel text-emerald-400"></i>
+          <span class="hidden md:inline">Orders & Sync Hub</span>
+          <span id="order-count-badge" class="ml-1 text-xs px-2 py-0.5 bg-tkm-purple/40 text-tkm-neon rounded-full">0</span>
+        </button>
+
+        <!-- Google Sheets Sync Configuration -->
+        <button onclick="openConfigModal()" title="Excel / Google Sheets Webhook Settings" class="p-2.5 rounded-xl bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple hover:text-white transition relative">
+          <i class="fa-solid fa-cloud-arrow-up text-tkm-neon"></i>
+          <span id="webhook-status-dot" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500"></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+    <!-- ==================== POS TERMINAL VIEW ==================== -->
+    <div id="view-pos" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- LEFT / MAIN: CATEGORIES & PRODUCT GRID (8 Cols) -->
+      <div class="lg:col-span-7 xl:col-span-8 space-y-5">
+        
+        <!-- Search & Category Filters -->
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-3.5 shadow-xl flex flex-col md:flex-row gap-3 items-center justify-between">
+          <!-- Search input -->
+          <div class="relative w-full md:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Search tech, keychains, donuts..." 
+                   class="w-full bg-tkm-black/60 border border-tkm-border text-sm rounded-xl pl-10 pr-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-tkm-purple focus:ring-1 focus:ring-tkm-purple">
+          </div>
+
+          <!-- Category Buttons -->
+          <div class="flex items-center space-x-1.5 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+            <button onclick="selectCategory('all')" class="cat-btn active px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-purple text-white" data-cat="all">
+              <i class="fa-solid fa-border-all mr-1"></i> All Items
+            </button>
+            <button onclick="selectCategory('repairs')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="repairs">
+              <i class="fa-solid fa-screwdriver-wrench text-tkm-neon mr-1"></i> Screen Repairs
+            </button>
+            <button onclick="selectCategory('keychains')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="keychains">
+              <i class="fa-solid fa-keychain text-tkm-pink mr-1"></i> Custom Keychains
+            </button>
+            <button onclick="selectCategory('donuts')" class="cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border" data-cat="donuts">
+              <i class="fa-solid fa-cookie text-amber-400 mr-1"></i> Mini Donuts
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Cards Grid -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <!-- Dynamic JS Products Injected Here -->
+        </div>
+
+      </div>
+
+      <!-- RIGHT: LIVE ORDER CART (4 Cols) -->
+      <div class="lg:col-span-5 xl:col-span-4">
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-2xl flex flex-col h-[calc(100vh-140px)] sticky top-24">
+          
+          <!-- Cart Header -->
+          <div class="flex items-center justify-between pb-4 border-b border-tkm-border">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-tkm-purple/20 flex items-center justify-center text-tkm-neon">
+                <i class="fa-solid fa-basket-shopping"></i>
+              </div>
+              <h2 class="text-lg font-display font-bold text-white">Current Order</h2>
+            </div>
+            <button onclick="clearCart()" class="text-xs text-slate-400 hover:text-rose-400 transition flex items-center gap-1">
+              <i class="fa-solid fa-trash-can"></i> Clear
+            </button>
+          </div>
+
+          <!-- Customer Info Fields -->
+          <div class="py-3 border-b border-tkm-border/50 grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Customer Name</label>
+              <input type="text" id="cust-name" placeholder="Walk-in Customer" class="w-full mt-1 bg-tkm-black/60 border border-tkm-border text-xs rounded-lg px-2.5 py-1.5 text-white focus:border-tkm-purple focus:outline-none">
+            </div>
+            <div>
+              <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Contact / Notes</label>
+              <input type="text" id="cust-contact" placeholder="Phone or Order Notes" class="w-full mt-1 bg-tkm-black/60 border border-tkm-border text-xs rounded-lg px-2.5 py-1.5 text-white focus:border-tkm-purple focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Cart Items Scroll Area -->
+          <div id="cart-items" class="flex-1 overflow-y-auto py-3 space-y-3 pr-1">
+            <!-- Empty Cart State -->
+            <div id="empty-cart-msg" class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
+              <i class="fa-solid fa-cart-flatbed text-4xl mb-3 text-tkm-border"></i>
+              <p class="text-sm font-medium">Cart is empty</p>
+              <p class="text-xs text-slate-600 mt-1">Select items from catalog to start order</p>
+            </div>
+          </div>
+
+          <!-- Order Summary & Checkout -->
+          <div class="pt-4 border-t border-tkm-border space-y-3 bg-tkm-card/50">
+            <!-- Calculations -->
+            <div class="space-y-1.5 text-xs text-slate-300">
+              <div class="flex justify-between">
+                <span>Subtotal</span>
+                <span id="cart-subtotal" class="font-mono text-white">$0.00</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="flex items-center gap-1">
+                  Discount
+                  <button onclick="toggleDiscountPrompt()" class="text-[10px] text-tkm-lightpurple underline">(Edit)</button>
+                </span>
+                <span id="cart-discount" class="font-mono text-emerald-400">-$0.00</span>
+              </div>
+              <div class="flex justify-between items-center text-sm font-bold text-white pt-2 border-t border-tkm-border/60">
+                <span class="text-tkm-neon font-display">TOTAL AMOUNT</span>
+                <span id="cart-total" class="text-xl font-mono text-tkm-neon">$0.00</span>
+              </div>
+            </div>
+
+            <!-- Payment Method Selector -->
+            <div>
+              <label class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1">Payment Method</label>
+              <div class="grid grid-cols-3 gap-2 text-xs">
+                <button type="button" onclick="setPaymentMethod('Cash')" id="pay-cash" class="pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition">
+                  <i class="fa-solid fa-money-bill-wave mr-1 text-emerald-400"></i> Cash
+                </button>
+                <button type="button" onclick="setPaymentMethod('GCash / E-Wallet')" id="pay-ewallet" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
+                  <i class="fa-solid fa-mobile-retro mr-1 text-sky-400"></i> E-Wallet
+                </button>
+                <button type="button" onclick="setPaymentMethod('Card')" id="pay-card" class="pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition">
+                  <i class="fa-solid fa-credit-card mr-1 text-tkm-pink"></i> Card
+                </button>
+              </div>
+            </div>
+
+            <!-- Checkout Action Buttons -->
+            <button id="checkout-btn" onclick="processOrder()" disabled class="w-full py-3 rounded-xl font-display font-bold text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>COMPLETE & SAVE ORDER</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== ORDERS & EXCEL SYNC HUB VIEW ==================== -->
+    <div id="view-orders" class="hidden space-y-6">
+      
+      <!-- Stats Overview Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+          <div class="p-3 bg-tkm-purple/20 rounded-xl text-tkm-neon text-xl">
+            <i class="fa-solid fa-sack-dollar"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 font-medium">Total Sales Revenue</p>
+            <h3 id="stat-revenue" class="text-2xl font-bold font-mono text-white">$0.00</h3>
+          </div>
+        </div>
+
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+          <div class="p-3 bg-sky-500/20 rounded-xl text-sky-400 text-xl">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 font-medium">Total Orders Placed</p>
+            <h3 id="stat-orders-count" class="text-2xl font-bold text-white">0</h3>
+          </div>
+        </div>
+
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+          <div class="p-3 bg-amber-500/20 rounded-xl text-amber-400 text-xl">
+            <i class="fa-solid fa-cookie"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 font-medium">Donuts & Keychains Sold</p>
+            <h3 id="stat-treats-count" class="text-2xl font-bold text-white">0</h3>
+          </div>
+        </div>
+
+        <div class="bg-tkm-card border border-tkm-border rounded-2xl p-4 flex items-center space-x-4 shadow-lg">
+          <div class="p-3 bg-emerald-500/20 rounded-xl text-emerald-400 text-xl">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 font-medium">Repairs Completed</p>
+            <h3 id="stat-repairs-count" class="text-2xl font-bold text-white">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Excel Hub Header & Export Controls -->
+      <div class="bg-tkm-card border border-tkm-border rounded-2xl p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-display font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-file-excel text-emerald-400"></i>
+            Excel Spreadsheet Order Database
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Orders automatically log locally and push directly to your configured Excel / Google Sheets API.
+          </p>
+        </div>
+
+        <div class="flex items-center space-x-3 w-full md:w-auto">
+          <!-- Direct Download Formatted Excel File Button -->
+          <button onclick="exportToExcelFile()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
+            <i class="fa-solid fa-download"></i>
+            Export Styled .XLSX Spreadsheet
+          </button>
+
+          <!-- Clear All Logs Button -->
+          <button onclick="clearAllOrders()" class="px-3 py-2.5 rounded-xl bg-tkm-hover text-rose-400 border border-tkm-border hover:bg-rose-500/10 text-xs font-semibold transition" title="Clear History">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders Data Table -->
+      <div class="bg-tkm-card border border-tkm-border rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-4 border-b border-tkm-border flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-200">Recent Transactions Log</h3>
+          <span class="text-xs text-slate-400">Live updated</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-tkm-black/60 text-slate-400 uppercase tracking-wider font-semibold border-b border-tkm-border">
+              <tr>
+                <th class="p-3.5">Order ID</th>
+                <th class="p-3.5">Date & Time</th>
+                <th class="p-3.5">Customer</th>
+                <th class="p-3.5">Items Summary</th>
+                <th class="p-3.5">Payment</th>
+                <th class="p-3.5">Total Amount</th>
+                <th class="p-3.5">Excel Webhook</th>
+                <th class="p-3.5 text-center">Receipt</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body" class="divide-y divide-tkm-border/50">
+              <!-- JS Populated Orders -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. CUSTOMIZATION MODAL (For Keychains Photo Text & Screen Repair Notes) -->
+  <div id="modal-custom" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-tkm-card border border-tkm-purple rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-tkm-border pb-3">
+        <h3 id="custom-modal-title" class="font-display font-bold text-white text-base">Customize Item</h3>
+        <button onclick="closeModal('modal-custom')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div id="custom-modal-body" class="space-y-3">
+        <!-- Dynamic fields injected via JS -->
+      </div>
+
+      <div class="pt-3 flex justify-end space-x-2">
+        <button onclick="closeModal('modal-custom')" class="px-4 py-2 rounded-xl text-xs bg-tkm-hover text-slate-300">Cancel</button>
+        <button id="custom-modal-save-btn" class="px-4 py-2 rounded-xl text-xs font-bold bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30">Add To Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. GOOGLE SHEETS / EXCEL WEBHOOK CONFIG MODAL -->
+  <div id="modal-config" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-tkm-card border border-tkm-border rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-tkm-border pb-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-file-excel text-emerald-400 text-lg"></i>
+          <h3 class="font-display font-bold text-white text-base">Google Sheets / Excel Cloud Link</h3>
+        </div>
+        <button onclick="closeModal('modal-config')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Connect your online Excel or Google Sheets spreadsheet to automatically save POS orders live when checked out.
+      </p>
+
+      <div class="space-y-3 bg-tkm-black/50 p-4 rounded-xl border border-tkm-border">
+        <div>
+          <label class="text-xs font-bold text-tkm-neon block mb-1">Webhook / Google Apps Script URL:</label>
+          <input type="text" id="webhook-url-input" placeholder="https://script.google.com/macros/s/.../exec or SheetBest URL" 
+                 class="w-full bg-tkm-black border border-tkm-border text-xs rounded-lg px-3 py-2 text-white font-mono focus:border-tkm-purple focus:outline-none">
+        </div>
+
+        <div class="text-[11px] text-slate-400 space-y-1">
+          <p class="font-bold text-slate-300">Quick Setup Instructions:</p>
+          <ol class="list-decimal pl-4 space-y-1">
+            <li>Create a Google Sheet with columns: <span class="text-tkm-lightpurple font-mono">OrderID, Date, Customer, Items, Payment, Total, Status</span></li>
+            <li>In Google Sheets, click <b>Extensions &gt; Apps Script</b> and paste a simple `doPost(e)` script.</li>
+            <li>Deploy as Web App (Set access to: <b>Anyone</b>) and paste the web app link above!</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-between items-center">
+        <button onclick="testWebhookConnection()" class="px-3 py-2 rounded-xl text-xs bg-tkm-hover border border-tkm-border text-slate-300 hover:text-white">
+          <i class="fa-solid fa-vial mr-1"></i> Test Connection
+        </button>
+        <button onclick="saveWebhookConfig()" class="px-4 py-2 rounded-xl text-xs font-bold bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. THERMAL RECEIPT PREVIEW MODAL -->
+  <div id="modal-receipt" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-tkm-card border border-tkm-border rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-tkm-border pb-3">
+        <h3 class="font-display font-bold text-white text-base">Customer Order Receipt</h3>
+        <button onclick="closeModal('modal-receipt')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- Printable Thermal Receipt Container -->
+      <div id="printableReceipt" class="bg-white text-black p-5 rounded-lg shadow font-mono text-xs space-y-3">
+        <!-- Receipt Header -->
+        <div class="text-center border-b border-dashed border-slate-400 pb-3">
+          <h2 class="font-bold text-base tracking-wider">TKM TECH & TREATS</h2>
+          <p class="text-[10px] text-slate-600">Screen Repairs &bull; Keychains &bull; Donuts</p>
+          <p class="text-[10px] text-slate-500 mt-1" id="receipt-date">2026-10-27 10:00 AM</p>
+          <p class="text-[10px] text-slate-700 font-bold mt-1" id="receipt-id">ORDER #TKM-8891</p>
+        </div>
+
+        <!-- Customer Line -->
+        <div class="border-b border-dashed border-slate-300 pb-2 text-[11px]">
+          <p>Customer: <span id="receipt-cust" class="font-bold">Walk-in</span></p>
+          <p>Payment: <span id="receipt-pay">Cash</span></p>
+        </div>
+
+        <!-- Receipt Items list -->
+        <div id="receipt-items-list" class="space-y-1.5 py-1">
+          <!-- Dynamic Items -->
+        </div>
+
+        <!-- Totals -->
+        <div class="border-t border-dashed border-slate-400 pt-2 space-y-1 text-right">
+          <div class="flex justify-between">
+            <span>Subtotal:</span>
+            <span id="receipt-subtotal">$0.00</span>
+          </div>
+          <div class="flex justify-between text-xs font-bold pt-1 border-t border-slate-300">
+            <span>TOTAL:</span>
+            <span id="receipt-total" class="text-sm">$0.00</span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center pt-3 border-t border-dashed border-slate-400 text-[10px] text-slate-600">
+          <p>Thank you for choosing TKM!</p>
+          <p class="mt-0.5">Tech repairs & sweet treats in one spot.</p>
+        </div>
+      </div>
+
+      <!-- Modal Action Buttons -->
+      <div class="flex space-x-2 pt-2">
+        <button onclick="window.print()" class="flex-1 py-2.5 rounded-xl bg-tkm-purple hover:bg-tkm-lightpurple text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg">
+          <i class="fa-solid fa-print"></i> Print Receipt
+        </button>
+        <button onclick="closeModal('modal-receipt')" class="px-4 py-2.5 rounded-xl bg-tkm-hover text-slate-300 text-xs font-semibold border border-tkm-border">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==================== POS LOGIC & APPLICATION JAVASCRIPT ==================== -->
+  <script>
+    // --- PRODUCT CATALOG DATA (TKM Tech & Treats) ---
+    const PRODUCTS = [
+      // 1. SCREEN REPAIRS
+      {
+        id: 'rep-1',
+        name: 'iPhone Screen Replacement',
+        category: 'repairs',
+        price: 65.00,
+        icon: 'fa-mobile-screen-button',
+        iconColor: 'text-tkm-neon',
+        badge: 'Top Service',
+        customizable: true,
+        customPrompt: 'Enter Phone Model & Color (e.g. iPhone 13 Black):'
+      },
+      {
+        id: 'rep-2',
+        name: 'Android Screen Repair',
+        category: 'repairs',
+        price: 55.00,
+        icon: 'fa-mobile-retro',
+        iconColor: 'text-tkm-neon',
+        badge: 'Repair',
+        customizable: true,
+        customPrompt: 'Enter Device Brand/Model (e.g. Samsung A52):'
+      },
+      {
+        id: 'rep-3',
+        name: 'Glass Protection / Armor Installation',
+        category: 'repairs',
+        price: 15.00,
+        icon: 'fa-shield-halved',
+        iconColor: 'text-sky-400',
+        badge: 'Add-on',
+        customizable: false
+      },
+      {
+        id: 'rep-4',
+        name: 'Full Device Diagnostic & Cleaning',
+        category: 'repairs',
+        price: 20.00,
+        icon: 'fa-screwdriver-wrench',
+        iconColor: 'text-emerald-400',
+        badge: 'Maintenance',
+        customizable: true,
+        customPrompt: 'Describe Issue / Diagnostic Notes:'
+      },
+
+      // 2. CUSTOM PICTURE KEYCHAINS
+      {
+        id: 'key-1',
+        name: 'Custom Photo Acrylic Keychain',
+        category: 'keychains',
+        price: 8.50,
+        icon: 'fa-keychain',
+        iconColor: 'text-tkm-pink',
+        badge: 'Custom Picture',
+        customizable: true,
+        customPrompt: 'Photo Reference Code / Couple Name:'
+      },
+      {
+        id: 'key-2',
+        name: 'Double-Sided Memory Keychain',
+        category: 'keychains',
+        price: 12.00,
+        icon: 'fa-images',
+        iconColor: 'text-tkm-pink',
+        badge: 'Best Seller',
+        customizable: true,
+        customPrompt: 'Side A & Side B Photo Notes:'
+      },
+      {
+        id: 'key-3',
+        name: 'Tech Circuit Mini Keychain',
+        category: 'keychains',
+        price: 6.00,
+        icon: 'fa-microchip',
+        iconColor: 'text-tkm-neon',
+        badge: 'Tech Metallic',
+        customizable: false
+      },
+
+      // 3. MINI DONUTS
+      {
+        id: 'don-1',
+        name: 'Pink Frosting & Sprinkles Mini Donut',
+        category: 'donuts',
+        price: 1.50,
+        icon: 'fa-cookie',
+        iconColor: 'text-tkm-pink',
+        badge: 'Signature',
+        customizable: false
+      },
+      {
+        id: 'don-2',
+        name: 'Classic Glazed Mini Donut',
+        category: 'donuts',
+        price: 1.25,
+        icon: 'fa-circle-dot',
+        iconColor: 'text-amber-300',
+        badge: 'Fresh Baked',
+        customizable: false
+      },
+      {
+        id: 'don-3',
+        name: 'Chocolate Fudge Drizzle Mini Donut',
+        category: 'donuts',
+        price: 1.50,
+        icon: 'fa-cookie-bite',
+        iconColor: 'text-amber-700',
+        badge: 'Rich Chocolate',
+        customizable: false
+      },
+      {
+        id: 'don-4',
+        name: 'Assorted Mini Donuts (Box of 6)',
+        category: 'donuts',
+        price: 7.50,
+        icon: 'fa-box-open',
+        iconColor: 'text-amber-400',
+        badge: 'Value Pack',
+        customizable: true,
+        customPrompt: 'Specify Flavor Mix (e.g., 2 Glazed, 2 Pink, 2 Choco):'
+      },
+      {
+        id: 'don-5',
+        name: 'Party Box Mini Donuts (Box of 12)',
+        category: 'donuts',
+        price: 14.00,
+        icon: 'fa-gifts',
+        iconColor: 'text-tkm-lightpurple',
+        badge: 'Party Size',
+        customizable: true,
+        customPrompt: 'Flavor Request / Special Message on Box:'
+      }
+    ];
+
+    // --- APPLICATION STATE ---
+    let cart = [];
+    let activeCategory = 'all';
+    let paymentMethod = 'Cash';
+    let discountAmount = 0;
+    let ordersHistory = [];
+    let pendingCustomItem = null;
+    let webhookUrl = localStorage.getItem('tkm_webhook_url') || '';
+
+    // --- INITIALIZATION ---
+    window.onload = function() {
+      loadSavedOrders();
+      renderProducts();
+      updateCartUI();
+      updateWebhookStatusDot();
+    };
+
+    // --- TAB SWITCHING ---
+    function switchTab(tab) {
+      const posView = document.getElementById('view-pos');
+      const ordersView = document.getElementById('view-orders');
+      const posBtn = document.getElementById('nav-pos-btn');
+      const ordersBtn = document.getElementById('nav-orders-btn');
+
+      if (tab === 'pos') {
+        posView.classList.remove('hidden');
+        ordersView.classList.add('hidden');
+        
+        posBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple";
+        ordersBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition";
+      } else {
+        posView.classList.add('hidden');
+        ordersView.classList.remove('hidden');
+
+        ordersBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30 transition hover:bg-tkm-lightpurple";
+        posBtn.className = "px-3.5 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 bg-tkm-card text-slate-300 border border-tkm-border hover:border-tkm-purple transition";
+        
+        renderOrdersTable();
+      }
+    }
+
+    // --- PRODUCT RENDERING & FILTERS ---
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+
+      const filtered = PRODUCTS.filter(p => {
+        const matchesCategory = (activeCategory === 'all' || p.category === activeCategory);
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm) || p.badge.toLowerCase().includes(searchTerm);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500">
+            <i class="fa-solid fa-magnifying-glass text-3xl mb-2"></i>
+            <p class="text-sm">No items found matching your filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => `
+        <div onclick="handleProductClick('${p.id}')" 
+             class="bg-tkm-card border border-tkm-border hover:border-tkm-purple/80 hover:bg-tkm-hover rounded-2xl p-4 transition duration-200 cursor-pointer shadow-lg flex flex-col justify-between group relative overflow-hidden">
+          
+          <!-- Top Row Badge & Icon -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-tkm-black/60 border border-tkm-border text-tkm-neon">
+                ${p.badge}
+              </span>
+              <div class="w-9 h-9 rounded-xl bg-tkm-black/50 border border-tkm-border/60 flex items-center justify-center text-lg ${p.iconColor} group-hover:scale-110 transition">
+                <i class="fa-solid ${p.icon}"></i>
+              </div>
+            </div>
+
+            <h3 class="font-display font-semibold text-white text-sm group-hover:text-tkm-neon transition line-clamp-2">
+              ${p.name}
+            </h3>
+          </div>
+
+          <!-- Price & Add Button -->
+          <div class="mt-4 pt-3 border-t border-tkm-border/40 flex items-center justify-between">
+            <span class="text-lg font-mono font-bold text-white">$${p.price.toFixed(2)}</span>
+            <span class="w-8 h-8 rounded-xl bg-tkm-purple/20 text-tkm-neon group-hover:bg-tkm-purple group-hover:text-white flex items-center justify-center text-xs transition">
+              <i class="fa-solid fa-plus"></i>
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.dataset.cat === cat) {
+          btn.className = "cat-btn active px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-purple text-white shadow-lg shadow-tkm-purple/30";
+        } else {
+          btn.className = "cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-tkm-hover text-slate-300 hover:text-white border border-tkm-border";
+        }
+      });
+      renderProducts();
+    }
+
+    function filterProducts() {
+      renderProducts();
+    }
+
+    // --- CART MANAGEMENT & CUSTOMIZATION ---
+    function handleProductClick(productId) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      if (product.customizable) {
+        openCustomizationModal(product);
+      } else {
+        addToCart(product, '');
+      }
+    }
+
+    function openCustomizationModal(product) {
+      pendingCustomItem = product;
+      document.getElementById('custom-modal-title').innerText = `Customize: ${product.name}`;
+      document.getElementById('custom-modal-body').innerHTML = `
+        <label class="text-xs font-bold text-slate-300 block">${product.customPrompt}</label>
+        <textarea id="custom-note-input" rows="3" placeholder="Type instructions, photo details or model info..." 
+                  class="w-full mt-1.5 bg-tkm-black border border-tkm-border text-xs rounded-xl p-3 text-white focus:border-tkm-purple focus:outline-none"></textarea>
+      `;
+      
+      document.getElementById('custom-modal-save-btn').onclick = function() {
+        const note = document.getElementById('custom-note-input').value.trim();
+        addToCart(pendingCustomItem, note);
+        closeModal('modal-custom');
+      };
+
+      openModal('modal-custom');
+    }
+
+    function addToCart(product, customNote) {
+      // Check if item already exists with exact same note
+      const existing = cart.find(item => item.id === product.id && item.note === customNote);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          category: product.category,
+          price: product.price,
+          icon: product.icon,
+          qty: 1,
+          note: customNote
+        });
+      }
+
+      updateCartUI();
+    }
+
+    function updateCartQty(index, delta) {
+      if (cart[index]) {
+        cart[index].qty += delta;
+        if (cart[index].qty <= 0) {
+          cart.splice(index, 1);
+        }
+        updateCartUI();
+      }
+    }
+
+    function clearCart() {
+      cart = [];
+      discountAmount = 0;
+      document.getElementById('cust-name').value = '';
+      document.getElementById('cust-contact').value = '';
+      updateCartUI();
+    }
+
+    function toggleDiscountPrompt() {
+      const val = prompt('Enter discount amount ($):', discountAmount);
+      if (val !== null) {
+        const parsed = parseFloat(val);
+        discountAmount = isNaN(parsed) || parsed < 0 ? 0 : parsed;
+        updateCartUI();
+      }
+    }
+
+    function setPaymentMethod(method) {
+      paymentMethod = method;
+      document.querySelectorAll('.pay-btn').forEach(btn => {
+        btn.className = "pay-btn border border-tkm-border bg-tkm-hover text-slate-400 py-1.5 rounded-lg font-medium text-center transition";
+      });
+
+      if (method === 'Cash') {
+        document.getElementById('pay-cash').className = "pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition";
+      } else if (method === 'GCash / E-Wallet') {
+        document.getElementById('pay-ewallet').className = "pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition";
+      } else {
+        document.getElementById('pay-card').className = "pay-btn border border-tkm-purple bg-tkm-purple/20 text-white py-1.5 rounded-lg font-medium text-center transition";
+      }
+    }
+
+    function updateCartUI() {
+      const cartContainer = document.getElementById('cart-items');
+      const checkoutBtn = document.getElementById('checkout-btn');
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500">
+            <i class="fa-solid fa-cart-flatbed text-4xl mb-3 text-tkm-border"></i>
+            <p class="text-sm font-medium">Cart is empty</p>
+            <p class="text-xs text-slate-600 mt-1">Select items from catalog to start order</p>
+          </div>
+        `;
+        checkoutBtn.disabled = true;
+        document.getElementById('cart-subtotal').innerText = '$0.00';
+        document.getElementById('cart-discount').innerText = '-$0.00';
+        document.getElementById('cart-total').innerText = '$0.00';
+        return;
+      }
+
+      checkoutBtn.disabled = false;
+
+      let subtotal = 0;
+      cartContainer.innerHTML = cart.map((item, idx) => {
+        const itemTotal = item.price * item.qty;
+        subtotal += itemTotal;
+
+        return `
+          <div class="bg-tkm-black/60 border border-tkm-border rounded-xl p-3 flex items-center justify-between text-xs">
+            <div class="flex-1 pr-2">
+              <div class="font-semibold text-white flex items-center gap-1.5">
+                <i class="fa-solid ${item.icon} text-tkm-neon text-[11px]"></i>
+                ${item.name}
+              </div>
+              ${item.note ? `<div class="text-[10px] text-tkm-lightpurple font-mono mt-0.5 italic">Note: ${item.note}</div>` : ''}
+              <div class="text-[11px] text-slate-400 font-mono mt-1">$${item.price.toFixed(2)} x ${item.qty}</div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <!-- Qty controls -->
+              <div class="flex items-center bg-tkm-card border border-tkm-border rounded-lg overflow-hidden">
+                <button onclick="updateCartQty(${idx}, -1)" class="px-2 py-1 hover:bg-tkm-hover text-slate-300">-</button>
+                <span class="px-2 font-mono font-bold text-white">${item.qty}</span>
+                <button onclick="updateCartQty(${idx}, 1)" class="px-2 py-1 hover:bg-tkm-hover text-slate-300">+</button>
+              </div>
+
+              <!-- Item Total -->
+              <span class="font-mono font-bold text-white w-14 text-right">$${itemTotal.toFixed(2)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const total = Math.max(0, subtotal - discountAmount);
+
+      document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cart-discount').innerText = `-$${discountAmount.toFixed(2)}`;
+      document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+    }
+
+    // --- ORDER PROCESSING & EXCEL LIVE SYNC ---
+    async function processOrder() {
+      if (cart.length === 0) return;
+
+      const custName = document.getElementById('cust-name').value.trim() || 'Walk-in Customer';
+      const custContact = document.getElementById('cust-contact').value.trim() || 'N/A';
+      
+      const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const total = Math.max(0, subtotal - discountAmount);
+
+      const itemsSummary = cart.map(i => `${i.qty}x ${i.name} ${i.note ? `(${i.note})` : ''}`).join(', ');
+
+      const newOrder = {
+        id: 'TKM-' + Math.floor(100000 + Math.random() * 900000),
+        date: new Date().toLocaleString(),
+        customer: custName,
+        contact: custContact,
+        items: itemsSummary,
+        rawItems: [...cart],
+        subtotal: subtotal,
+        discount: discountAmount,
+        total: total,
+        payment: paymentMethod,
+        webhookStatus: 'Pending'
+      };
+
+      // 1. Add to local state
+      ordersHistory.unshift(newOrder);
+      saveOrdersToLocalStorage();
+
+      // 2. Push to Google Sheets / Excel Webhook if configured
+      if (webhookUrl) {
+        try {
+          newOrder.webhookStatus = 'Syncing...';
+          renderOrdersTable();
+          
+          await fetch(webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newOrder)
+          });
+
+          newOrder.webhookStatus = 'Saved to Cloud Excel';
+        } catch (err) {
+          console.error('Webhook error:', err);
+          newOrder.webhookStatus = 'Local Only (Error)';
+        }
+      } else {
+        newOrder.webhookStatus = 'Local Only (No URL)';
+      }
+
+      saveOrdersToLocalStorage();
+      renderOrdersTable();
+
+      // 3. Display Thermal Receipt
+      showReceiptModal(newOrder);
+
+      // 4. Reset Cart
+      clearCart();
+    }
+
+    // --- RECEIPT DISPLAY ---
+    function showReceiptModal(order) {
+      document.getElementById('receipt-id').innerText = `ORDER #${order.id}`;
+      document.getElementById('receipt-date').innerText = order.date;
+      document.getElementById('receipt-cust').innerText = order.customer;
+      document.getElementById('receipt-pay').innerText = order.payment;
+
+      document.getElementById('receipt-items-list').innerHTML = order.rawItems.map(item => `
+        <div class="flex justify-between items-start text-[11px]">
+          <div>
+            <span class="font-bold">${item.qty}x</span> ${item.name}
+            ${item.note ? `<div class="text-[9px] text-slate-600">(${item.note})</div>` : ''}
+          </div>
+          <span class="font-mono">$${(item.price * item.qty).toFixed(2)}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('receipt-subtotal').innerText = `$${order.subtotal.toFixed(2)}`;
+      document.getElementById('receipt-total').innerText = `$${order.total.toFixed(2)}`;
+
+      openModal('modal-receipt');
+    }
+
+    function viewReceiptById(orderId) {
+      const order = ordersHistory.find(o => o.id === orderId);
+      if (order) {
+        showReceiptModal(order);
+      }
+    }
+
+    // --- ORDERS TABLE & ANALYTICS ---
+    function renderOrdersTable() {
+      const tbody = document.getElementById('orders-table-body');
+      document.getElementById('order-count-badge').innerText = ordersHistory.length;
+
+      // Stats
+      let totalRev = 0;
+      let treatsCount = 0;
+      let repairsCount = 0;
+
+      ordersHistory.forEach(o => {
+        totalRev += o.total;
+        if (o.rawItems) {
+          o.rawItems.forEach(i => {
+            if (i.category === 'repairs') repairsCount += i.qty;
+            if (i.category === 'donuts' || i.category === 'keychains') treatsCount += i.qty;
+          });
+        }
+      });
+
+      document.getElementById('stat-revenue').innerText = `$${totalRev.toFixed(2)}`;
+      document.getElementById('stat-orders-count').innerText = ordersHistory.length;
+      document.getElementById('stat-treats-count').innerText = treatsCount;
+      document.getElementById('stat-repairs-count').innerText = repairsCount;
+
+      if (ordersHistory.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="p-8 text-center text-slate-500">
+              No sales logged yet. Complete an order in POS terminal to view spreadsheet records.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = ordersHistory.map(o => `
+        <tr class="hover:bg-tkm-hover/50 transition">
+          <td class="p-3.5 font-mono font-bold text-tkm-neon">${o.id}</td>
+          <td class="p-3.5 text-slate-400">${o.date}</td>
+          <td class="p-3.5 font-medium text-white">${o.customer}</td>
+          <td class="p-3.5 max-w-xs truncate text-slate-300" title="${o.items}">${o.items}</td>
+          <td class="p-3.5"><span class="px-2 py-0.5 rounded-full bg-tkm-black border border-tkm-border text-[10px] text-slate-300">${o.payment}</span></td>
+          <td class="p-3.5 font-mono font-bold text-emerald-400">$${o.total.toFixed(2)}</td>
+          <td class="p-3.5">
+            <span class="text-[10px] px-2 py-0.5 rounded-md ${o.webhookStatus.includes('Saved') ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
+              ${o.webhookStatus}
+            </span>
+          </td>
+          <td class="p-3.5 text-center">
+            <button onclick="viewReceiptById('${o.id}')" class="text-tkm-lightpurple hover:underline text-xs font-bold">
+              <i class="fa-solid fa-receipt mr-1"></i> View
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // --- SHEETJS EXCEL EXPORT (.XLSX) ---
+    function exportToExcelFile() {
+      if (ordersHistory.length === 0) {
+        alert('No orders available to export!');
+        return;
+      }
+
+      // Format dataset specifically for Excel spreadsheet matching TKM branding columns
+      const excelData = ordersHistory.map(o => ({
+        'Order ID': o.id,
+        'Date & Time': o.date,
+        'Customer Name': o.customer,
+        'Contact / Notes': o.contact,
+        'Items Purchased': o.items,
+        'Subtotal ($)': o.subtotal,
+        'Discount ($)': o.discount,
+        'Total Amount ($)': o.total,
+        'Payment Method': o.payment,
+        'Sync Status': o.webhookStatus
+      }));
+
+      // Create Worksheet using SheetJS
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      
+      // Auto-fit column widths
+      const max_width = excelData.reduce((w, r) => Math.max(w, r['Items Purchased'].length), 10);
+      worksheet['!cols'] = [
+        { wch: 15 }, // ID
+        { wch: 22 }, // Date
+        { wch: 20 }, // Customer
+        { wch: 20 }, // Contact
+        { wch: Math.min(max_width, 50) }, // Items
+        { wch: 12 }, // Subtotal
+        { wch: 12 }, // Discount
+        { wch: 15 }, // Total
+        { wch: 15 }, // Payment
+        { wch: 20 }  // Status
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "TKM Sales Log");
+
+      // Export file
+      const fileName = `TKM_Tech_and_Treats_Sales_${new Date().toISOString().slice(0,10)}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+    }
+
+    // --- LOCAL STORAGE HELPERS ---
+    function saveOrdersToLocalStorage() {
+      localStorage.setItem('tkm_orders_history', JSON.stringify(ordersHistory));
+    }
+
+    function loadSavedOrders() {
+      const saved = localStorage.getItem('tkm_orders_history');
+      if (saved) {
+        try {
+          ordersHistory = JSON.parse(saved);
+        } catch (e) {
+          ordersHistory = [];
+        }
+      }
+    }
+
+    function clearAllOrders() {
+      if (confirm('Are you sure you want to clear all logged order history?')) {
+        ordersHistory = [];
+        saveOrdersToLocalStorage();
+        renderOrdersTable();
+      }
+    }
+
+    // --- WEBHOOK CONFIGURATION MODAL LOGIC ---
+    function openConfigModal() {
+      document.getElementById('webhook-url-input').value = webhookUrl;
+      openModal('modal-config');
+    }
+
+    function saveWebhookConfig() {
+      const url = document.getElementById('webhook-url-input').value.trim();
+      webhookUrl = url;
+      localStorage.setItem('tkm_webhook_url', webhookUrl);
+      updateWebhookStatusDot();
+      closeModal('modal-config');
+    }
+
+    function updateWebhookStatusDot() {
+      const dot = document.getElementById('webhook-status-dot');
+      if (webhookUrl) {
+        dot.className = "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        dot.title = "Google Sheets / Webhook Connected";
+      } else {
+        dot.className = "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500";
+        dot.title = "No Webhook Configured (Local Mode)";
+      }
+    }
+
+    async function testWebhookConnection() {
+      const url = document.getElementById('webhook-url-input').value.trim();
+      if (!url) {
+        alert('Please enter a Webhook or Apps Script URL first!');
+        return;
+      }
+
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ test: true, message: 'TKM POS Test Ping' })
+        });
+        alert('Ping sent successfully! Check your Google Sheet to verify receipt.');
+      } catch (err) {
+        alert('Failed to reach URL: ' + err.message);
+      }
+    }
+
+    // --- GENERIC MODAL CONTROLS ---
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
