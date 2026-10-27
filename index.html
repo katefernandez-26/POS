@@ -109,10 +109,8 @@
       
       <!-- Logo + Brand Name -->
       <div class="flex items-center space-x-4">
-        <!-- SVG TKM Logo Badge Replica -->
         <div class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-tkm-accent via-tkm-purple to-tkm-pink p-[2px] shadow-lg shadow-tkm-purple/30 group cursor-pointer" onclick="switchTab('pos')">
           <div class="w-full h-full bg-tkm-black rounded-full flex flex-col items-center justify-center p-1 relative overflow-hidden">
-            <!-- Background Circuit Effect -->
             <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#c77dff_1px,transparent_1px)] [background-size:8px_8px]"></div>
             <i class="fa-solid fa-wrench text-tkm-neon text-xs absolute top-1.5 right-2"></i>
             <span class="font-display font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-tkm-neon via-white to-tkm-lightpurple tracking-wider leading-none">TKM</span>
@@ -123,7 +121,7 @@
         <div>
           <h1 class="text-xl font-display font-extrabold text-white tracking-tight flex items-center gap-2">
             TKM <span class="text-tkm-neon font-light">Tech, Salon & Treats</span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.1</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.2</span>
           </h1>
           <p class="text-xs text-slate-400 font-medium hidden sm:block">
             <i class="fa-solid fa-scissors text-tkm-pink mr-1"></i> Hair Rebond &bull;
@@ -243,7 +241,7 @@
             </div>
           </div>
 
-          <!-- Order Summary & Checkout -->
+          <!-- Order Summary & Checkout Area -->
           <div class="pt-4 border-t border-tkm-border space-y-3 bg-tkm-card/50">
             <!-- Calculations -->
             <div class="space-y-1.5 text-xs text-slate-300">
@@ -280,11 +278,28 @@
               </div>
             </div>
 
-            <!-- Checkout Action Buttons -->
-            <button id="checkout-btn" onclick="processOrder()" disabled class="w-full py-3 rounded-xl font-display font-bold text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-              <i class="fa-solid fa-circle-check"></i>
-              <span>COMPLETE & SAVE ORDER</span>
-            </button>
+            <!-- SEPARATED ACTIONS: Save Order (Auto-Excel Sync) vs Print Receipt -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <!-- Save Order Button -->
+              <button id="save-order-btn" onclick="saveOrder()" disabled 
+                      class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-emerald-600 to-teal-500 shadow-lg shadow-emerald-600/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                <i class="fa-solid fa-floppy-disk text-sm"></i>
+                <span>SAVE ORDER</span>
+              </button>
+
+              <!-- Print Receipt Button -->
+              <button id="print-receipt-btn" onclick="printReceiptForCurrentOrder()" disabled 
+                      class="w-full py-3 rounded-xl font-display font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-tkm-purple to-tkm-pink shadow-lg shadow-tkm-purple/30 hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                <i class="fa-solid fa-print text-sm"></i>
+                <span>PRINT RECEIPT</span>
+              </button>
+            </div>
+
+            <!-- Inline Success / Notification Toast -->
+            <div id="pos-toast" class="hidden text-center p-2 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition">
+              <i class="fa-solid fa-circle-check mr-1"></i> Order saved & auto-synced to Excel!
+            </div>
+
           </div>
 
         </div>
@@ -919,7 +934,8 @@
 
     function updateCartUI() {
       const cartContainer = document.getElementById('cart-items');
-      const checkoutBtn = document.getElementById('checkout-btn');
+      const saveOrderBtn = document.getElementById('save-order-btn');
+      const printReceiptBtn = document.getElementById('print-receipt-btn');
 
       if (cart.length === 0) {
         cartContainer.innerHTML = `
@@ -929,14 +945,16 @@
             <p class="text-xs text-slate-600 mt-1">Select items from catalog to start order</p>
           </div>
         `;
-        checkoutBtn.disabled = true;
+        if (saveOrderBtn) saveOrderBtn.disabled = true;
+        if (printReceiptBtn) printReceiptBtn.disabled = true;
         document.getElementById('cart-subtotal').innerText = '₱0.00';
         document.getElementById('cart-discount').innerText = '-₱0.00';
         document.getElementById('cart-total').innerText = '₱0.00';
         return;
       }
 
-      checkoutBtn.disabled = false;
+      if (saveOrderBtn) saveOrderBtn.disabled = false;
+      if (printReceiptBtn) printReceiptBtn.disabled = false;
 
       let subtotal = 0;
       cartContainer.innerHTML = cart.map((item, idx) => {
@@ -974,8 +992,8 @@
       document.getElementById('cart-total').innerText = `₱${total.toFixed(2)}`;
     }
 
-    // --- ORDER PROCESSING & EXCEL LIVE SYNC ---
-    async function processOrder() {
+    // --- SEPARATED SAVING ORDER & AUTO EXCEL WEBHOOK SYNC ---
+    async function saveOrder() {
       if (cart.length === 0) return;
 
       const custName = document.getElementById('cust-name').value.trim() || 'Walk-in Customer';
@@ -1000,11 +1018,11 @@
         webhookStatus: 'Pending'
       };
 
-      // 1. Save locally
+      // 1. Save locally to DB array & localStorage
       ordersHistory.unshift(newOrder);
       saveOrdersToLocalStorage();
 
-      // 2. Push to Google Sheets / Excel Webhook API if configured
+      // 2. Automatically sync to Excel / Google Sheets Webhook API if configured
       if (webhookUrl) {
         try {
           newOrder.webhookStatus = 'Syncing...';
@@ -1019,7 +1037,7 @@
 
           newOrder.webhookStatus = 'Saved to Cloud Excel';
         } catch (err) {
-          console.error('Webhook error:', err);
+          console.error('Webhook sync error:', err);
           newOrder.webhookStatus = 'Local Only (Error)';
         }
       } else {
@@ -1029,11 +1047,47 @@
       saveOrdersToLocalStorage();
       renderOrdersTable();
 
-      // 3. Show Thermal Receipt
-      showReceiptModal(newOrder);
+      // 3. Show Toast Notification
+      showToastNotification(`Order #${newOrder.id} saved & synced successfully!`);
 
-      // 4. Reset Cart
+      // 4. Clear Cart for next customer
       clearCart();
+    }
+
+    // --- DEDICATED PRINT RECEIPT ACTION ---
+    function printReceiptForCurrentOrder() {
+      if (cart.length === 0) return;
+
+      const custName = document.getElementById('cust-name').value.trim() || 'Walk-in Customer';
+      const custContact = document.getElementById('cust-contact').value.trim() || 'N/A';
+      
+      const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const total = Math.max(0, subtotal - discountAmount);
+
+      const tempOrder = {
+        id: 'PREVIEW-' + Math.floor(1000 + Math.random() * 9000),
+        date: new Date().toLocaleString(),
+        customer: custName,
+        contact: custContact,
+        rawItems: [...cart],
+        subtotal: subtotal,
+        discount: discountAmount,
+        total: total,
+        payment: paymentMethod
+      };
+
+      showReceiptModal(tempOrder);
+    }
+
+    function showToastNotification(msg) {
+      const toast = document.getElementById('pos-toast');
+      if (toast) {
+        toast.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> ${msg}`;
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 3500);
+      }
     }
 
     // --- RECEIPT DISPLAY ---
