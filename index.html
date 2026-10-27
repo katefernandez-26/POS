@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TKM Tech, Salon & Treats - Point of Sale</title>
+  <title>TKM Tech & Treats - Point of Sale</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -175,7 +175,7 @@
 
           <div>
             <h1 class="text-xl font-display font-extrabold text-white tracking-tight flex items-center gap-2">
-              TKM <span class="text-tkm-neon font-light">Tech, Salon & Treats</span>
+              TKM <span class="text-tkm-neon font-light">Tech & Treats</span>
               <span class="text-xs px-2 py-0.5 rounded-full bg-tkm-purple/20 text-tkm-neon border border-tkm-purple/40">POS v2.3</span>
             </h1>
             <p class="text-xs text-slate-400 font-medium hidden sm:block">
@@ -327,7 +327,7 @@
                 <button id="complete-save-btn" onclick="completeAndSaveOrder()" disabled 
                         class="w-full py-3.5 rounded-xl font-display font-extrabold text-sm text-white bg-gradient-to-r from-tkm-purple via-tkm-lightpurple to-tkm-pink shadow-xl shadow-tkm-purple/30 hover:brightness-110 active:scale-[0.99] transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   <i class="fa-solid fa-circle-check text-base"></i>
-                  <span>COMPLETE & SAVE ORDER</span>
+                  <span>SAVE ORDER</span>
                 </button>
               </div>
 
@@ -565,7 +565,7 @@
     const ADMIN_USER = "tkm_admin";
     const ADMIN_PASS = "tkm@2026";
 
-    // --- PRODUCT CATALOG DATA (TKM Tech, Salon & Treats - ALL PRICES IN PESOS ₱) ---
+    // --- PRODUCT CATALOG DATA (TKM Tech & Treats - ALL PRICES IN PESOS ₱) ---
     const PRODUCTS = [
       // 1. HAIR REBOND & SALON SERVICES
       {
@@ -696,7 +696,7 @@
       // 4. MINI DONUTS
       {
         id: 'don-1',
-        name: 'Pink Frosting & Sprinkles Mini Donut',
+        name: 'Matcha Glazed & Sprinkles Mini Donut',
         category: 'donuts',
         price: 10.00,
         icon: 'fa-cookie',
@@ -706,7 +706,7 @@
       },
       {
         id: 'don-2',
-        name: 'Classic Glazed Mini Donut',
+        name: 'Chocolate Glazed & Milk Powder Mini Donut',
         category: 'donuts',
         price: 10.00,
         icon: 'fa-circle-dot',
@@ -716,24 +716,13 @@
       },
       {
         id: 'don-3',
-        name: 'Chocolate Fudge Drizzle Mini Donut',
+        name: 'Strawberry Glazed & Sprinkles Mini Donut',
         category: 'donuts',
         price: 10.00,
         icon: 'fa-cookie-bite',
         iconColor: 'text-amber-700',
         badge: 'Single Treat',
         customizable: false
-      },
-      {
-        id: 'don-4',
-        name: 'Assorted Mini Donuts (Box of 6)',
-        category: 'donuts',
-        price: 60.00,
-        icon: 'fa-box-open',
-        iconColor: 'text-amber-400',
-        badge: 'Box of 6',
-        customizable: true,
-        customPrompt: 'Specify Flavor Mix (e.g. 2 Glazed, 2 Pink, 2 Choco):'
       },
       {
         id: 'don-5',
