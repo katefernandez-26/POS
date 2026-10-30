@@ -48,7 +48,7 @@
   </script>
 
   <style>
-    /* Custom Scrollbar & Circuit Tech Pattern Background */
+    /* Custom Scrollbar & Main App Circuit Tech Pattern Background */
     body {
       background-color: #0a0812;
       background-image: 
@@ -57,6 +57,12 @@
         linear-gradient(to right, rgba(42, 34, 74, 0.15) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(42, 34, 74, 0.15) 1px, transparent 1px);
       background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+    }
+
+    /* Dedicated Custom Background Image for Login Portal */
+    #login-gateway {
+      background: linear-gradient(to bottom, rgba(10, 8, 18, 0.75), rgba(10, 8, 18, 0.88)), 
+                  url('image_4e613f.jpg') center/cover no-repeat fixed;
     }
 
     ::-webkit-scrollbar {
@@ -75,7 +81,7 @@
     }
 
     .neon-glow {
-      box-shadow: 0 0 25px rgba(157, 78, 221, 0.4);
+      box-shadow: 0 0 35px rgba(157, 78, 221, 0.45);
     }
     
     @media print {
@@ -98,8 +104,8 @@
 <body class="text-slate-200 font-sans min-h-screen flex flex-col antialiased selection:bg-tkm-purple selection:text-white">
 
   <!-- ==================== 1. FULLSCREEN LOGIN GATEWAY ==================== -->
-  <div id="login-gateway" class="fixed inset-0 z-50 bg-tkm-black flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-tkm-card border border-tkm-border rounded-3xl p-8 shadow-2xl relative overflow-hidden neon-glow">
+  <div id="login-gateway" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-tkm-card/85 backdrop-blur-md border border-tkm-border/90 rounded-3xl p-8 shadow-2xl relative overflow-hidden neon-glow">
       <div class="absolute -top-16 -right-16 w-32 h-32 bg-tkm-purple/30 rounded-full blur-2xl"></div>
       <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-tkm-pink/20 rounded-full blur-2xl"></div>
 
@@ -150,7 +156,7 @@
         </button>
       </form>
 
-      <div class="mt-6 text-center text-[11px] text-slate-500 border-t border-tkm-border/60 pt-4">
+      <div class="mt-6 text-center text-[11px] text-slate-400 border-t border-tkm-border/60 pt-4">
         Protected POS Gateway &bull; Authorized Personnel Only
       </div>
     </div>
