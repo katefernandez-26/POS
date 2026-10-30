@@ -59,6 +59,12 @@
       background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
     }
 
+    /* Dedicated Background Banner for Login Portal */
+    #login-gateway {
+      background: linear-gradient(to bottom, rgba(10, 8, 18, 0.70), rgba(10, 8, 18, 0.85)), 
+                  url('Screenshot 2026-10-30 124518.jpg') center/cover no-repeat fixed;
+    }
+
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -98,19 +104,8 @@
 <body class="text-slate-200 font-sans min-h-screen flex flex-col antialiased selection:bg-tkm-purple selection:text-white">
 
   <!-- ==================== 1. FULLSCREEN LOGIN GATEWAY ==================== -->
-  <div id="login-gateway" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-hidden">
-    
-    <!-- Looping Video Background -->
-    <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 filter brightness-[0.55] contrast-105">
-      <source src="background.mp4" type="video/mp4">
-      Your browser does not support HTML5 video.
-    </video>
-
-    <!-- Dark Overlay Layer for Text Legibility -->
-    <div class="absolute inset-0 bg-tkm-black/40 z-10 pointer-events-none"></div>
-
-    <!-- Login Card -->
-    <div class="max-w-md w-full bg-tkm-card/85 backdrop-blur-md border border-tkm-border/90 rounded-3xl p-8 shadow-2xl relative z-20 overflow-hidden neon-glow">
+  <div id="login-gateway" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-tkm-card/85 backdrop-blur-md border border-tkm-border/90 rounded-3xl p-8 shadow-2xl relative overflow-hidden neon-glow">
       <div class="absolute -top-16 -right-16 w-32 h-32 bg-tkm-purple/30 rounded-full blur-2xl"></div>
       <div class="absolute -bottom-16 -left-16 w-32 h-32 bg-tkm-pink/20 rounded-full blur-2xl"></div>
 
